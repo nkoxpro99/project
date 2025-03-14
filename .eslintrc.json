@@ -1,0 +1,101 @@
+{
+  "root": true,
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nx", "@typescript-eslint", "prettier", "simple-import-sort", "react", "react-hooks"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [
+              {
+                "sourceTag": "*",
+                "onlyDependOnLibsWithTags": ["*"]
+              }
+            ]
+          }
+        ],
+        "arrow-spacing": ["warn", { "before": true, "after": true }],
+        "comma-dangle": ["error", "always-multiline"],
+        "comma-spacing": "error",
+        "comma-style": "error",
+        "dot-location": ["error", "property"],
+        "handle-callback-err": "off",
+        "keyword-spacing": "error",
+        "max-nested-callbacks": ["error", { "max": 4 }],
+        "max-statements-per-line": ["error", { "max": 2 }],
+        "no-console": "warn",
+        "no-floating-decimal": "error",
+        "no-lonely-if": "error",
+        "no-multi-spaces": "error",
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1, "maxBOF": 0 }],
+        "no-trailing-spaces": ["error"],
+        "no-var": "error",
+        "object-curly-spacing": ["error", "always"],
+        "prefer-const": "error",
+        "quotes": ["error", "single"],
+        "space-before-blocks": "error",
+        "space-before-function-paren": [
+          "error",
+          {
+            "anonymous": "never",
+            "named": "never",
+            "asyncArrow": "always"
+          }
+        ],
+        "space-in-parens": "error",
+        "space-infix-ops": "error",
+        "space-unary-ops": "error",
+        "spaced-comment": "error",
+        "yoda": "error",
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-empty-function": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": 0,
+        "react/display-name": 0,
+        "react/jsx-no-useless-fragment": "off",
+        "react/no-unknown-property": "off",
+        "react/no-unescaped-entities ": "off",
+        "react/jsx-sort-props": [
+          "warn",
+          {
+            "callbacksLast": true,
+            "shorthandFirst": true,
+            "noSortAlphabetically": false,
+            "reservedFirst": true
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off"
+      }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nx/javascript"],
+      "rules": {}
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+.range-slider .range-slider__range, .range-slider .range-slider__thumb {
+    background-color: rgb(124, 102, 220);
+}
+
+.range-slider .range-slider__thumb {
+    width: 16px;
+    height: 16px;
+}
