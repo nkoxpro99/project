@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { Loading } from '@/components/Fallback';
-
 import { useAuthStore } from '../../auth';
 import { AuthenticateResponse } from '../../auth/models';
 import { privateApi } from '../../axios/axios';
@@ -16,8 +14,19 @@ export const Login = () => {
   const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // available email check func
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    //check email form
+    if (!isValidEmail(email)) {
+      setError('Email không hợp lệ.');
+      return;
+    }
+    
     setLoading(true);
     privateApi
       .post<AuthenticateResponse>('auth/login', { Email: email, Password: password })
@@ -31,9 +40,20 @@ export const Login = () => {
         }
       })
       .catch((e) => {
-        setError('Đăng nhập thất bại, vui lòng thử lại.');
-        setLoading(false);
+        if (e.response) {
+          if (e.response.status === 401) {
+            setError('Email hoặc mật khẩu không đúng.');
+        } else if (e.response.status === 500) {
+          setError('Lỗi hệ thống, vui lòng thử lại sau.');
+        } else {
+          setError('Đăng nhập thất bại, vui lòng thử lại.');
+        }
+      } else {
+        setError('Không thể kết nối tới máy chủ.');
+      }
+      setLoading(false);
       });
+
   };
 
   return (
@@ -83,10 +103,19 @@ const Button = styled.button`
   color: white;
   border: none;
   border-radius: 5px;
-  box-sizing: border-box;
   cursor: pointer;
-  position: relative;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #45a049;
+  }
+
+  &:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
 `;
+
 
 const Error = styled.div`
   margin-top: 5px;
