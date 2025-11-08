@@ -16,6 +16,8 @@ import { generateDayLabelsInMonth, generateMonthLabels } from '../../utils/time.
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const Revenue = () => {
   const [rentedWarehouseRevenue, setRentedWarehouseRevenue] = useState<RentedWarehouseRevenue[]>([]);
   const [yearChartData, setYearChartData] = useState<ChartData | null>();
@@ -78,13 +80,13 @@ export const Revenue = () => {
 
   useEffect(() => {
     if (selectedMonth) {
-      const dayLabelsInMonth = generateDayLabelsInMonth(selectedMonth, 2023);
+      const dayLabelsInMonth = generateDayLabelsInMonth(selectedMonth, CURRENT_YEAR);
       setMonthChartData({
         labels: dayLabelsInMonth,
         datasets: [
           {
             label: 'Doanh thu trong tháng',
-            data: calculateRevenuePerDayByStatus(rentedWarehouseRevenue, selectedMonth, 2023),
+            data: calculateRevenuePerDayByStatus(rentedWarehouseRevenue, selectedMonth, CURRENT_YEAR),
             backgroundColor: '#2196f3',
           },
         ],
@@ -102,7 +104,7 @@ export const Revenue = () => {
   return (
     <Container>
       <h1>Doanh thu</h1>
-      <h4>Năm 2023</h4>
+      <h4>Năm {CURRENT_YEAR}</h4>
       {yearChartData ? (
         <ChartWrapper>
           <Bar data={yearChartData as any} options={generateBarChartOptions({ onClickCallback: onClickMonthBar })} />
@@ -111,7 +113,9 @@ export const Revenue = () => {
       <Spacing />
       {selectedMonth ? (
         <MonthBarChartWrapper>
-          <h4>Tháng {selectedMonth}/2023</h4>
+          <h4>
+            Tháng {selectedMonth}/{CURRENT_YEAR}
+          </h4>
           {monthChartData ? (
             <ChartWrapper small>
               <Bar data={monthChartData as any} options={generateBarChartOptions()} />

@@ -7,9 +7,9 @@ import styled, { createGlobalStyle } from 'styled-components';
 const COLLAPSED_WIDTH = 96;
 const EXPANDED_WIDTH = 280;
 const TRANSITION = '240ms cubic-bezier(0.4, 0, 0.2, 1)';
-const COLLAPSED_TILE_SIZE = 72;
-const COLLAPSED_ICON_SIZE = 48;
-const COLLAPSED_ICON_RADIUS = 16;
+const COLLAPSED_TILE_SIZE = 64;
+const COLLAPSED_ICON_SIZE = 44;
+const COLLAPSED_ICON_RADIUS = 14;
 const COLLAPSED_TILE_RADIUS = COLLAPSED_ICON_RADIUS + 4;
 
 const SidebarGlobalStyle = createGlobalStyle<{ $open: boolean }>`
