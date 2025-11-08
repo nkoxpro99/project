@@ -128,6 +128,7 @@ const BrandName = styled.span`
   font-weight: 600;
 `;
 
+// Main footer component for the application
 export const Footer: React.FC = () => {
   return (
     <FooterContainer>

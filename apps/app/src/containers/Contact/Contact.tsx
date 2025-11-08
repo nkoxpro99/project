@@ -1,3 +1,4 @@
+// Contact page component with form and information panels
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';

@@ -192,6 +192,7 @@ const CTAButton = styled(Link)`
   }
 `;
 
+// About page component with company information and features
 export const About: React.FC = () => {
   return (
     <AboutContainer>

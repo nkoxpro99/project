@@ -1,3 +1,4 @@
+// Main application router with layout and navigation setup
 import { noop } from 'lodash';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
