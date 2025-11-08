@@ -32,7 +32,7 @@ const contactChannels = [
   },
   {
     label: 'Văn phòng',
-    value: '123 Võ Văn Kiệt, Sơn Trà, Đà Nẵng',
+    value: '123 Le Loi, Quan 1, Thanh pho Ho Chi Minh',
     description: 'Tiếp đón trực tiếp theo lịch hẹn',
   },
 ];

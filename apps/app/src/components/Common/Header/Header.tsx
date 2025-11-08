@@ -90,17 +90,20 @@ export const Header = () => {
             <Link to={'/home'}>
               <LeftSideItem>Trang chủ</LeftSideItem>
             </Link>
-            <Link to={'/help'}>
-              <LeftSideItem>Hỗ trợ</LeftSideItem>
-            </Link>
-            <Link to={'/contact'}>
-              <LeftSideItem>Liên hệ</LeftSideItem>
+            <Link to={'/about'}>
+              <LeftSideItem>Về chúng tôi</LeftSideItem>
             </Link>
             {isAuthenticated && (
               <Link to={'/list'}>
                 <LeftSideItem>Kho bãi của tôi</LeftSideItem>
               </Link>
             )}
+            <Link to={'/help'}>
+              <LeftSideItem>Hỗ trợ</LeftSideItem>
+            </Link>
+            <Link to={'/contact'}>
+              <LeftSideItem>Liên hệ</LeftSideItem>
+            </Link>
           </UlContainerLeft>
         </Nav>
       </LeftSide>

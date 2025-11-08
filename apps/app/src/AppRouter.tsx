@@ -4,7 +4,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 
 import { PersistLogin } from './auth';
 import { Carousel } from './components/Carousel';
-import { Header } from './components/Common/Header';
+import { Footer, Header } from './components/Common';
 import { Comment } from './components/Dev';
 import { NotFound } from './components/Fallback';
 import { MapView } from './components/Map';
@@ -12,6 +12,7 @@ import { MapSearchBox } from './components/Map/MapSearchBox';
 import { RouteDirection } from './components/RouteDirection';
 import { UploadMultipleImages } from './components/UploadMultipleImages/UploadMultipleImages';
 import {
+  About,
   Contact,
   Contract,
   CreateWarehouse,
@@ -31,15 +32,21 @@ import { RentingWarehouseResolver, WarehouseResolver } from './resolver';
 
 const GlobalStyle = createGlobalStyle`
     body {
-        font-family: 'Signika Negative', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         margin: 0;
     }
+`;
+
+const AppLayout = styled.div`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const BackgroundWrapper = styled.div`
   background-color: #eee;
   padding: 16px 0;
-  min-height: calc(100vh - 60px - 32px); //100vh - header_height - total_self_padding
+  flex: 1;
 `;
 
 const Wrapper = styled.div`
@@ -53,14 +60,15 @@ const Wrapper = styled.div`
 
 const RootWrapper = () => {
   return (
-    <>
+    <AppLayout>
       <Header></Header>
       <BackgroundWrapper>
         <Wrapper>
           <Outlet />
         </Wrapper>
       </BackgroundWrapper>
-    </>
+      <Footer />
+    </AppLayout>
   );
 };
 
@@ -76,8 +84,7 @@ export const AppRouter = () => {
             <Route element={<RootWrapper />}>
               <Route element={<Home />} path="" />
               <Route element={<Home />} path="home" />
-              <Route element={<Contact />} path="contact" />
-              <Route element={<Help />} path="help" />
+              <Route element={<About />} path="about" />
               <Route element={<AuthGuard />}>
                 <Route element={<MyWarehouse />} path="list" />
               </Route>
@@ -97,6 +104,8 @@ export const AppRouter = () => {
               <Route element={<AuthGuard requireRoles={[Role.Owner]} />}>
                 <Route element={<CreateWarehouse />} path="create" />
               </Route>
+              <Route element={<Contact />} path="contact" />
+              <Route element={<Help />} path="help" />
             </Route>
           </Route>
           <Route element={<RootWrapper />} path="/*">
