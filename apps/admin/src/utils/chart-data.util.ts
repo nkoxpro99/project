@@ -36,19 +36,21 @@ export function calculateRevenuePerMonthByStatus(data: RentedWarehouseRevenue[])
 
 export function calculateRevenuePerDayByStatus(data: RentedWarehouseRevenue[], month: number, year: number): number[] {
   const dayLabels = generateDayLabelsInMonth(month, year);
-  const dataByDay = data.filter(it => it.rentedMonth === month).reduce(
-    (prev, curr) => {
-      const label = dayLabels[curr.rentedDay - 1];
-      if (prev[label]) {
-        prev[label].push(curr);
-      } else {
-        prev[label] = [curr];
-      }
+  const dataByDay = data
+    .filter((it) => it.rentedMonth === month)
+    .reduce(
+      (prev, curr) => {
+        const label = dayLabels[curr.rentedDay - 1];
+        if (prev[label]) {
+          prev[label].push(curr);
+        } else {
+          prev[label] = [curr];
+        }
 
-      return prev;
-    },
-    {} as Record<string, RentedWarehouseRevenue[]>,
-  );
+        return prev;
+      },
+      {} as Record<string, RentedWarehouseRevenue[]>,
+    );
 
   return dayLabels.map((it) => {
     const dataInMonth = dataByDay[it] ?? [];
@@ -71,12 +73,14 @@ export function generateBarChartOptions(options?: { onClickCallback?: (...args: 
   const { onClickCallback } = options || {};
 
   return {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         ticks: {
-          autoSkip: false,
-          maxRotation: 0,
-          autoSkipPadding: 0.5,
+          autoSkip: true,
+          maxRotation: 45,
+          autoSkipPadding: 4,
         },
       },
       y: {
@@ -100,10 +104,9 @@ export function generateBarChartOptions(options?: { onClickCallback?: (...args: 
       },
     },
     onClick: function (e: any) {
-        if (onClickCallback) {
-            onClickCallback(e);
-        }
+      if (onClickCallback) {
+        onClickCallback(e);
+      }
     },
   };
 }
-

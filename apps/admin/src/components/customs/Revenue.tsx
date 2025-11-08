@@ -92,34 +92,31 @@ export const Revenue = () => {
 
       setTimeout(() => {
         const monthBarChartElement = document.getElementById('month-bar-chart');
-
-        console.log(monthBarChartElement);
-        monthBarChartElement?.scrollIntoView({
-          behavior: 'smooth'
-        });
+        if (monthBarChartElement) {
+          monthBarChartElement.scrollIntoView({ behavior: 'smooth' });
+        }
       }, 100);
     }
-  }, [selectedMonth]);
+  }, [selectedMonth, rentedWarehouseRevenue]);
 
   return (
     <Container>
       <h1>Doanh thu</h1>
       <h4>Năm 2023</h4>
       {yearChartData ? (
-        <Bar
-          data={yearChartData as any}
-          options={generateBarChartOptions({
-            onClickCallback: onClickMonthBar,
-          })}
-        />
-      ) : (
-        <></>
-      )}
+        <ChartWrapper>
+          <Bar data={yearChartData as any} options={generateBarChartOptions({ onClickCallback: onClickMonthBar })} />
+        </ChartWrapper>
+      ) : null}
       <Spacing />
       {selectedMonth ? (
         <MonthBarChartWrapper>
           <h4>Tháng {selectedMonth}/2023</h4>
-          {monthChartData ? <Bar data={monthChartData as any} options={generateBarChartOptions()} /> : <></>}
+          {monthChartData ? (
+            <ChartWrapper small>
+              <Bar data={monthChartData as any} options={generateBarChartOptions()} />
+            </ChartWrapper>
+          ) : null}
         </MonthBarChartWrapper>
       ) : (
         <></>
@@ -130,7 +127,7 @@ export const Revenue = () => {
 
 const Container = styled.div`
   margin: 16px 0 32px;
-`
+`;
 
 const Spacing = styled.div`
   margin: 16px 0;
@@ -144,3 +141,23 @@ const MonthBarChartWrapper = styled.div.attrs({
   border-radius: 8px;
 `;
 
+const ChartWrapper = styled.div<{ small?: boolean }>`
+  position: relative;
+  width: 100%;
+  height: ${(p) => (p.small ? '320px' : '420px')};
+  margin-bottom: 8px;
+
+  @media (max-width: 900px) {
+    height: ${(p) => (p.small ? '240px' : '320px')};
+  }
+
+  @media (max-width: 480px) {
+    height: ${(p) => (p.small ? '200px' : '260px')};
+  }
+
+  canvas {
+    /* ensure canvas fills wrapper when maintainAspectRatio is false */
+    width: 100% !important;
+    height: 100% !important;
+  }
+`;
