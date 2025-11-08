@@ -12,8 +12,10 @@ import { MapSearchBox } from './components/Map/MapSearchBox';
 import { RouteDirection } from './components/RouteDirection';
 import { UploadMultipleImages } from './components/UploadMultipleImages/UploadMultipleImages';
 import {
+  Contact,
   Contract,
   CreateWarehouse,
+  Help,
   Home,
   Login,
   MyWarehouse,
@@ -74,6 +76,8 @@ export const AppRouter = () => {
             <Route element={<RootWrapper />}>
               <Route element={<Home />} path="" />
               <Route element={<Home />} path="home" />
+              <Route element={<Contact />} path="contact" />
+              <Route element={<Help />} path="help" />
               <Route element={<AuthGuard />}>
                 <Route element={<MyWarehouse />} path="list" />
               </Route>
@@ -119,6 +123,10 @@ export const AppRouter = () => {
               element={
                 <RouteDirection
                   from="360 Đ. Lê Duẩn, Tân Chính, Thanh Khê, Đà Nẵng 550000, Vietnam"
+                  location={{
+                    lat: 16.047079,
+                    lng: 108.20623,
+                  }}
                   to="Thanh Lương 11, Hòa Xuân, Cẩm Lệ, Đà Nẵng 550000, Vietnam"
                 />
               }

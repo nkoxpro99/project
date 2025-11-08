@@ -1,5 +1,7 @@
+export * from './Contact';
 export * from './Contract';
 export * from './CreateWarehouse';
+export * from './Help';
 export * from './Home';
 export * from './Login';
 export * from './MyWarehouse';

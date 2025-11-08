@@ -74,12 +74,10 @@ export const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    privateApi.post('auth/revoke-token').catch((e) => console.error(e));
+    privateApi.post('auth/revoke-token').catch(() => undefined);
     logout();
     navigate('/login');
   };
-
-  console.log(isAuthenticated);
 
   return (
     <Container>
@@ -91,6 +89,12 @@ export const Header = () => {
           <UlContainerLeft>
             <Link to={'/home'}>
               <LeftSideItem>Trang chủ</LeftSideItem>
+            </Link>
+            <Link to={'/help'}>
+              <LeftSideItem>Hỗ trợ</LeftSideItem>
+            </Link>
+            <Link to={'/contact'}>
+              <LeftSideItem>Liên hệ</LeftSideItem>
             </Link>
             {isAuthenticated && (
               <Link to={'/list'}>
