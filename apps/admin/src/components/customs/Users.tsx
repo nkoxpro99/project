@@ -74,7 +74,9 @@ export const Users = () => {
         {
           label: 'Số lượng',
           data: [ownerCount, renterCount],
-          backgroundColor: ['#4F46E5', '#F59E0B'],
+          backgroundColor: ['#06b6d4', '#bae6fd'],
+          borderColor: ['#0891b2', '#7dd3fc'],
+          borderWidth: 2,
         },
       ],
     });
@@ -107,17 +109,17 @@ export const Users = () => {
       {
         label: 'Tổng người dùng',
         value: users.length,
-        accent: '#312E81',
+        accent: '#0284c7',
       },
       {
         label: 'Chủ kho bãi',
         value: ownerCount,
-        accent: '#4F46E5',
+        accent: '#06b6d4',
       },
       {
         label: 'Người thuê',
         value: renterCount,
-        accent: '#F59E0B',
+        accent: '#bae6fd',
       },
     ],
     [ownerCount, renterCount, users.length],
@@ -139,12 +141,12 @@ export const Users = () => {
             <ChartArea>
               <ChartWrapper>{chartData ? <Doughnut data={chartData} options={chartOptions} /> : null}</ChartWrapper>
               <LegendRow>
-                <LegendItem $color="#4F46E5">
-                  <LegendDot $color="#4F46E5" />
+                <LegendItem $color="#06b6d4">
+                  <LegendDot $color="#06b6d4" />
                   <LegendLabel>Chủ kho bãi</LegendLabel>
                 </LegendItem>
-                <LegendItem $color="#F59E0B">
-                  <LegendDot $color="#F59E0B" />
+                <LegendItem $color="#bae6fd">
+                  <LegendDot $color="#bae6fd" />
                   <LegendLabel>Người thuê</LegendLabel>
                 </LegendItem>
               </LegendRow>
@@ -229,8 +231,8 @@ const AnalyticsCard = styled.div`
   max-width: 1080px;
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
-  border: 1px solid var(--admin-border-color);
-  box-shadow: var(--admin-shadow-soft);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
 
   @media (min-width: 1200px) {
     padding: 36px 48px;
@@ -247,7 +249,7 @@ const ChartTitle = styled.h2`
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--admin-text-primary);
+  color: var(--admin-primary);
 `;
 
 const ChartSubtitle = styled.span`

@@ -135,6 +135,47 @@ const SectionHeader = styled.div`
 
 const TableContainer = styled.div`
   position: relative;
+
+  /* Tùy chỉnh độ rộng các cột */
+  .RaDatagrid-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .RaDatagrid-headerCell,
+  .RaDatagrid-rowCell {
+    &:nth-child(1) {
+      width: 70px; /* Id */
+      text-align: center;
+    }
+    &:nth-child(2) {
+      width: 140px; /* Tên */
+    }
+    &:nth-child(3) {
+      width: 280px; /* Địa chỉ - rộng hơn */
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+      line-height: 1.4;
+    }
+    &:nth-child(4) {
+      width: 110px; /* Giá */
+    }
+    &:nth-child(5),
+    &:nth-child(6) {
+      width: 70px; /* Tầng và cửa*/
+      text-align: center;
+    }
+    &:nth-child(7),
+    &:nth-child(8) {
+      width: 100px; /* Diện tích và Đã thuê */
+      text-align: center;
+    }
+    &:nth-child(9) {
+      width: 180px; /* Hành động */
+      text-align: center;
+    }
+  }
 `;
 
 const ActionRow = styled.div`

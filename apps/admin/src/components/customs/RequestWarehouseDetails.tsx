@@ -92,8 +92,11 @@ export const RequestWarehouseDetails = () => {
 
   return (
     <>
-      <h1>{warehouse.name || ''}</h1>
       <Wrapper>
+        <Header>
+          <h1>{warehouse.name || ''}</h1>
+          <Button label="Quay lại" onClick={() => redirect('/request')} />
+        </Header>
         <InfoGrid>
           {infoItems.map(({ label, value }) => (
             <InfoItem key={label}>
@@ -174,10 +177,26 @@ export const RequestWarehouseDetails = () => {
 };
 
 const Wrapper = styled.div`
-  margin: 32px 0;
   display: flex;
   flex-direction: column;
   gap: 28px;
+  margin-top: 16px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+  }
+
+  button {
+    padding: 8px 16px !important;
+  }
 `;
 
 const InfoGrid = styled.div`
@@ -187,8 +206,8 @@ const InfoGrid = styled.div`
   padding: clamp(20px, 3vw, 32px);
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
-  border: 1px solid var(--admin-border-color);
-  box-shadow: var(--admin-shadow-soft);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
 `;
 
 const InfoItem = styled.div`
@@ -202,7 +221,7 @@ const InfoLabel = styled.span`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--admin-text-secondary);
+  color: var(--admin-primary);
 `;
 
 const InfoValue = styled.span`
@@ -228,13 +247,10 @@ const ImageLink = styled.a`
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(226, 232, 240, 0.8);
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
+  transition: border-color 180ms ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+    border-color: rgba(14, 165, 233, 0.6);
   }
 `;
 
@@ -252,8 +268,8 @@ const DescriptionCard = styled.div`
   padding: clamp(20px, 3vw, 32px);
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
-  border: 1px solid var(--admin-border-color);
-  box-shadow: var(--admin-shadow-soft);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
 `;
 
 const SectionTitle = styled.h4`
@@ -261,7 +277,7 @@ const SectionTitle = styled.h4`
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--admin-text-primary);
+  color: var(--admin-primary);
 `;
 
 const Description = styled.div`
@@ -297,9 +313,9 @@ const UpdateZone = styled.div`
   max-width: 560px;
   padding: clamp(20px, 3vw, 32px);
   border-radius: var(--admin-radius-lg);
-  border: 1px solid var(--admin-border-color);
+  border: 2px solid rgba(14, 165, 233, 0.2);
   background: var(--admin-surface);
-  box-shadow: var(--admin-shadow-soft);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -311,7 +327,7 @@ const UpdateTitle = styled.h4`
   font-size: 17px;
   font-weight: 600;
   text-align: center;
-  color: var(--admin-text-primary);
+  color: var(--admin-primary);
   letter-spacing: 0.02em;
 `;
 
@@ -339,12 +355,10 @@ const RadioGroupItem = stitches.styled(RadioGroup.Item, {
   border: '2px solid rgba(148, 163, 184, 0.7)',
   display: 'grid',
   placeItems: 'center',
-  transition: 'border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease',
+  transition: 'border-color 180ms ease',
   boxShadow: `0 2px 10px ${blackA.blackA7}`,
   '&:hover': {
-    borderColor: 'rgba(37, 99, 235, 0.7)',
-    transform: 'translateY(-1px)',
-    boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.18)',
+    borderColor: 'rgba(37, 99, 235, 0.9)',
   },
   '&:focus': { boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.25)' },
 });

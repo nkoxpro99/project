@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button, Confirm } from 'react-admin';
+import { Button, Confirm, useRedirect } from 'react-admin';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -25,6 +25,7 @@ type TransactionDetailsRecord = {
 
 export const TransactionDetails = () => {
   const { id } = useParams();
+  const redirect = useRedirect();
   const [data, setData] = useState<TransactionDetailsRecord | null>(null);
   const [isContractOpen, setContractOpen] = useState(false);
 
@@ -53,10 +54,18 @@ export const TransactionDetails = () => {
   if (!data) {
     return null;
   }
-
   return (
     <>
       <Wrapper>
+        <Header>
+          <h1>Chi tiết kho bãi</h1>
+          <Button
+            label="Quay lại"
+            onClick={() => {
+              redirect('/warehouse');
+            }}
+          />
+        </Header>
         <InfoGrid>
           <InfoItem>
             <InfoLabel>Tên kho bãi</InfoLabel>
@@ -97,7 +106,7 @@ export const TransactionDetails = () => {
             <ContractHeader>
               <SectionTitle>Hợp đồng thuê kho</SectionTitle>
               <ButtonRow>
-                <Button onClick={() => setContractOpen(true)}>Xem hợp đồng</Button>
+                <Button label="Xem hợp đồng" onClick={() => setContractOpen(true)} />
               </ButtonRow>
             </ContractHeader>
           </ContractCard>
@@ -131,7 +140,24 @@ export const TransactionDetails = () => {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 21px;
+  gap: 28px;
+  margin-top: 16px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+  }
+  
+  button {
+    padding: 8px 16px !important;
+  }
 `;
 
 const InfoGrid = styled.div`
@@ -195,6 +221,10 @@ const SectionTitle = styled.h4`
 const ButtonRow = styled.div`
   display: flex;
   gap: 9px;
+
+  button {
+    padding: 8px 16px !important;
+  }
 `;
 
 const ContractContent = styled.div`

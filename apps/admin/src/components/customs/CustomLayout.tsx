@@ -9,8 +9,24 @@ import CustomAppBar from './CustomAppBar';
 const SIDEBAR_WIDTH = '20dvw';
 
 const GlobalStyle = createGlobalStyle`
+  :root {
+    --admin-primary: #0ea5e9;
+    --admin-primary-dark: #0284c7;
+    --admin-primary-light: #38bdf8;
+    --admin-secondary: #2563eb;
+    --admin-page-bg: #f8fafc;
+    --admin-surface: #ffffff;
+    --admin-surface-muted: #f1f5f9;
+    --admin-border-color: rgba(203, 213, 225, 0.6);
+    --admin-text-primary: #0f172a;
+    --admin-text-secondary: #64748b;
+    --admin-text-tertiary: #94a3b8;
+    --admin-radius-lg: 16px;
+    --admin-shadow-soft: 0 2px 12px rgba(15, 23, 42, 0.08);
+  }
+
   body {
-    background: var(--admin-page-bg, #f8fafc);
+    background: var(--admin-page-bg);
   }
 
   .RaSidebar-root {
@@ -29,6 +45,56 @@ const GlobalStyle = createGlobalStyle`
   .RaLayout-content {
     max-width: 1200px;
     margin: 0 auto;
+
+    /* Style all h1 in content area */
+    h1 {
+      color: var(--admin-primary) !important;
+      font-weight: 700;
+    }
+
+    /* Style React Admin buttons */
+    .MuiButton-root:not([color="error"]) {
+      background: var(--admin-primary) !important;
+      color: #ffffff !important;
+      border: 1px solid var(--admin-primary) !important;
+      font-weight: 600 !important;
+      transition: background 220ms ease !important;
+      text-transform: none !important;
+
+      &:hover {
+        background: var(--admin-primary-dark) !important;
+      }
+    }
+
+    /* Keep error buttons red */
+    .MuiButton-root[color="error"] {
+      background: rgba(239, 68, 68, 0.1) !important;
+      color: #dc2626 !important;
+      border: 1px solid rgba(239, 68, 68, 0.3) !important;
+      transition: background 220ms ease !important;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.2) !important;
+      }
+    }
+
+    /* Style DataGrid header */
+    .RaDatagrid-headerCell {
+      background: rgba(14, 165, 233, 0.08) !important;
+      font-weight: 700 !important;
+      color: var(--admin-primary) !important;
+      border-bottom: 2px solid var(--admin-primary) !important;
+    }
+
+    /* Style active/selected rows */
+    .RaDatagrid-rowCell {
+      border-bottom-color: rgba(14, 165, 233, 0.15) !important;
+    }
+
+    /* Style checkboxes */
+    .MuiCheckbox-root.Mui-checked {
+      color: var(--admin-primary) !important;
+    }
   }
 
   .RaAppBar-root {
@@ -73,7 +139,7 @@ const Logo = styled.div`
   width: 42px;
   height: 42px;
   border-radius: 11px;
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  background: var(--admin-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,25 +211,27 @@ const NavItem = styled(NavLink)<{ $primary?: boolean }>`
   gap: 12px;
   padding: 11px 12px;
   border-radius: 10px;
-  text-decoration: none;
+  text-decoration: none !important;
   color: ${(props) => (props.$primary ? '#ffffff' : '#1f2937')};
-  background: ${(props) => (props.$primary ? 'linear-gradient(135deg, #0ea5e9, #2563eb)' : 'transparent')};
-  border: 1px solid ${(props) => (props.$primary ? 'rgba(37, 99, 235, 0.5)' : 'transparent')};
+  background: ${(props) => (props.$primary ? 'var(--admin-primary)' : 'transparent')};
+  border: 1px solid ${(props) => (props.$primary ? 'var(--admin-primary)' : 'transparent')};
   font-size: 13px;
   font-weight: 500;
-  transition: all 220ms ease;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
 
   &.active {
-    background: ${(props) =>
-      props.$primary ? 'linear-gradient(135deg, #0ea5e9, #2563eb)' : 'rgba(14, 165, 233, 0.1)'};
-    border-color: ${(props) => (props.$primary ? 'rgba(37, 99, 235, 0.5)' : 'rgba(14, 165, 233, 0.35)')};
-    color: ${(props) => (props.$primary ? '#ffffff' : '#0f172a')};
+    background: ${(props) => (props.$primary ? 'var(--admin-primary)' : 'rgba(14, 165, 233, 0.1)')};
+    border-color: ${(props) => (props.$primary ? 'var(--admin-primary)' : 'rgba(14, 165, 233, 0.35)')};
+    color: ${(props) => (props.$primary ? '#ffffff' : '#0ea5e9')};
   }
 
   &:hover {
-    background: ${(props) =>
-      props.$primary ? 'linear-gradient(135deg, #0284c7, #1d4ed8)' : 'rgba(14, 165, 233, 0.12)'};
-    border-color: ${(props) => (props.$primary ? 'rgba(37, 99, 235, 0.6)' : 'rgba(14, 165, 233, 0.4)')};
+    background: ${(props) => (props.$primary ? 'var(--admin-primary-dark)' : 'rgba(14, 165, 233, 0.12)')};
+    border-color: ${(props) => (props.$primary ? 'var(--admin-primary-dark)' : 'rgba(14, 165, 233, 0.4)')};
+    text-decoration: none !important;
   }
 
   svg {
@@ -192,7 +260,9 @@ const LogoutBtn = styled.button`
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 220ms ease;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease;
 
   &:hover {
     background: rgba(248, 113, 113, 0.16);

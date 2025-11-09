@@ -93,7 +93,9 @@ export const Revenue = () => {
         {
           label: 'Doanh thu',
           data: calculateRevenuePerMonthByStatus(rentedWarehouseRevenue),
-          backgroundColor: '#667CFF',
+          backgroundColor: '#0ea5e9',
+          borderColor: '#0284c7',
+          borderWidth: 1,
         },
       ],
     });
@@ -108,7 +110,9 @@ export const Revenue = () => {
           {
             label: 'Doanh thu trong tháng',
             data: calculateRevenuePerDayByStatus(rentedWarehouseRevenue, selectedMonth, CURRENT_YEAR),
-            backgroundColor: '#2196f3',
+            backgroundColor: '#38bdf8',
+            borderColor: '#0ea5e9',
+            borderWidth: 1,
           },
         ],
       });
@@ -185,8 +189,8 @@ const ChartCard = styled.section`
   padding: clamp(20px, 3vw, 36px);
   border-radius: var(--admin-radius-lg);
   background: var(--admin-surface);
-  border: 1px solid var(--admin-border-color);
-  box-shadow: var(--admin-shadow-soft);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -200,7 +204,7 @@ const ChartHeading = styled.h4`
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: var(--admin-text-primary);
+  color: var(--admin-primary);
 `;
 
 const ChartWrapper = styled.div<{ small?: boolean }>`

@@ -99,6 +99,10 @@ const Header = styled.div`
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+
+  button {
+    padding: 8px 16px !important;
+  }
 `;
 
 const DetailsGrid = styled.div`
