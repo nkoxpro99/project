@@ -1,3 +1,5 @@
+import type { ActiveElement, Chart, ChartEvent, TooltipItem } from 'chart.js';
+
 import { RentedWarehouseRevenue } from '../models/rented-warehouse-revenue.model';
 import { generateDayLabelsInMonth, generateMonthLabels } from './time.util';
 
@@ -69,7 +71,9 @@ export function calculateRevenuePerDayByStatus(data: RentedWarehouseRevenue[], m
   });
 }
 
-export function generateBarChartOptions(options?: { onClickCallback?: (...args: any) => void }) {
+export function generateBarChartOptions(options?: {
+  onClickCallback?: (payload: { event: ChartEvent; chart: Chart; elements: ActiveElement[] }) => void;
+}) {
   const { onClickCallback } = options || {};
 
   return {
@@ -85,8 +89,9 @@ export function generateBarChartOptions(options?: { onClickCallback?: (...args: 
       },
       y: {
         ticks: {
-          callback: function (value: any) {
-            return (value * 1000).toLocaleString('vi-VN') + ' VND';
+          callback: function (value: string | number) {
+            const numericValue = typeof value === 'number' ? value : Number(value);
+            return `${(numericValue * 1000).toLocaleString('vi-VN')} VND`;
           },
         },
       },
@@ -97,15 +102,16 @@ export function generateBarChartOptions(options?: { onClickCallback?: (...args: 
           labelTextColor: function () {
             return 'white';
           },
-          label: function (data: any) {
-            return (data.raw * 1000).toLocaleString('vi-VN') + ' VND';
+          label: function (tooltipItem: TooltipItem<'bar'>) {
+            const value = typeof tooltipItem.raw === 'number' ? tooltipItem.raw : Number(tooltipItem.raw ?? 0);
+            return `${(value * 1000).toLocaleString('vi-VN')} VND`;
           },
         },
       },
     },
-    onClick: function (e: any) {
+    onClick: function (event: ChartEvent, elements: ActiveElement[], chart: Chart) {
       if (onClickCallback) {
-        onClickCallback(e);
+        onClickCallback({ event, chart, elements });
       }
     },
   };
