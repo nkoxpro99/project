@@ -1,3 +1,4 @@
+// Navigation header component with menu and authentication
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -74,12 +75,10 @@ export const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    privateApi.post('auth/revoke-token').catch((e) => console.error(e));
+    privateApi.post('auth/revoke-token').catch(() => undefined);
     logout();
     navigate('/login');
   };
-
-  console.log(isAuthenticated);
 
   return (
     <Container>
@@ -92,11 +91,20 @@ export const Header = () => {
             <Link to={'/home'}>
               <LeftSideItem>Trang chủ</LeftSideItem>
             </Link>
+            <Link to={'/about'}>
+              <LeftSideItem>Về chúng tôi</LeftSideItem>
+            </Link>
             {isAuthenticated && (
               <Link to={'/list'}>
                 <LeftSideItem>Kho bãi của tôi</LeftSideItem>
               </Link>
             )}
+            <Link to={'/help'}>
+              <LeftSideItem>Hỗ trợ</LeftSideItem>
+            </Link>
+            <Link to={'/contact'}>
+              <LeftSideItem>Liên hệ</LeftSideItem>
+            </Link>
           </UlContainerLeft>
         </Nav>
       </LeftSide>

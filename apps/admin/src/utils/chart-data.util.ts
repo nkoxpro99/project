@@ -1,3 +1,5 @@
+import type { ActiveElement, Chart, ChartEvent, TooltipItem } from 'chart.js';
+
 import { RentedWarehouseRevenue } from '../models/rented-warehouse-revenue.model';
 import { generateDayLabelsInMonth, generateMonthLabels } from './time.util';
 
@@ -36,19 +38,21 @@ export function calculateRevenuePerMonthByStatus(data: RentedWarehouseRevenue[])
 
 export function calculateRevenuePerDayByStatus(data: RentedWarehouseRevenue[], month: number, year: number): number[] {
   const dayLabels = generateDayLabelsInMonth(month, year);
-  const dataByDay = data.filter(it => it.rentedMonth === month).reduce(
-    (prev, curr) => {
-      const label = dayLabels[curr.rentedDay - 1];
-      if (prev[label]) {
-        prev[label].push(curr);
-      } else {
-        prev[label] = [curr];
-      }
+  const dataByDay = data
+    .filter((it) => it.rentedMonth === month)
+    .reduce(
+      (prev, curr) => {
+        const label = dayLabels[curr.rentedDay - 1];
+        if (prev[label]) {
+          prev[label].push(curr);
+        } else {
+          prev[label] = [curr];
+        }
 
-      return prev;
-    },
-    {} as Record<string, RentedWarehouseRevenue[]>,
-  );
+        return prev;
+      },
+      {} as Record<string, RentedWarehouseRevenue[]>,
+    );
 
   return dayLabels.map((it) => {
     const dataInMonth = dataByDay[it] ?? [];
@@ -67,22 +71,27 @@ export function calculateRevenuePerDayByStatus(data: RentedWarehouseRevenue[], m
   });
 }
 
-export function generateBarChartOptions(options?: { onClickCallback?: (...args: any) => void }) {
+export function generateBarChartOptions(options?: {
+  onClickCallback?: (payload: { event: ChartEvent; chart: Chart; elements: ActiveElement[] }) => void;
+}) {
   const { onClickCallback } = options || {};
 
   return {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         ticks: {
-          autoSkip: false,
-          maxRotation: 0,
-          autoSkipPadding: 0.5,
+          autoSkip: true,
+          maxRotation: 45,
+          autoSkipPadding: 4,
         },
       },
       y: {
         ticks: {
-          callback: function (value: any) {
-            return (value * 1000).toLocaleString('vi-VN') + ' VND';
+          callback: function (value: string | number) {
+            const numericValue = typeof value === 'number' ? value : Number(value);
+            return `${(numericValue * 1000).toLocaleString('vi-VN')} VND`;
           },
         },
       },
@@ -93,17 +102,17 @@ export function generateBarChartOptions(options?: { onClickCallback?: (...args: 
           labelTextColor: function () {
             return 'white';
           },
-          label: function (data: any) {
-            return (data.raw * 1000).toLocaleString('vi-VN') + ' VND';
+          label: function (tooltipItem: TooltipItem<'bar'>) {
+            const value = typeof tooltipItem.raw === 'number' ? tooltipItem.raw : Number(tooltipItem.raw ?? 0);
+            return `${(value * 1000).toLocaleString('vi-VN')} VND`;
           },
         },
       },
     },
-    onClick: function (e: any) {
-        if (onClickCallback) {
-            onClickCallback(e);
-        }
+    onClick: function (event: ChartEvent, elements: ActiveElement[], chart: Chart) {
+      if (onClickCallback) {
+        onClickCallback({ event, chart, elements });
+      }
     },
   };
 }
-

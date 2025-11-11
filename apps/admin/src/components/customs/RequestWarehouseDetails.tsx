@@ -6,13 +6,33 @@ import { isEmpty } from 'lodash';
 import { useEffect, useState } from 'react';
 import { Button, useRedirect } from 'react-admin';
 import { useParams } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { apiUrl } from '../../provider';
 
+type WarehouseImage = {
+  originalUrl: string;
+};
+
+type WarehouseDetailsRecord = {
+  id: number;
+  name: string;
+  address: string;
+  price: number;
+  area: number;
+  floors: number;
+  doors: number;
+  images: WarehouseImage[];
+  description?: string | null;
+};
+
+type WarehouseDetailsResponse = WarehouseDetailsRecord & {
+  images?: WarehouseImage[];
+};
+
 export const RequestWarehouseDetails = () => {
   const { id } = useParams();
-  const [warehouse, setWarehouse] = useState<any>(null);
+  const [warehouse, setWarehouse] = useState<WarehouseDetailsRecord | null>(null);
   const [status, setStatus] = useState<string>('1');
   const [rejectedReason, setRejectedReason] = useState('');
   const redirect = useRedirect();
@@ -24,237 +44,383 @@ export const RequestWarehouseDetails = () => {
   };
 
   useEffect(() => {
+    if (!id) {
+      return;
+    }
+
     axios
-      .post<any, any>(`${apiUrl}/warehouse/static/${id}`, {
+      .post<WarehouseDetailsResponse>(`${apiUrl}/warehouse/static/${id}`, {
         includes: ['RentedWarehouses', 'Comments', 'Comments.User', 'Images'],
       })
-      .then((v) => {
-        setWarehouse(v.data);
+      .then(({ data }) => {
+        if (!data) {
+          setWarehouse(null);
+          return;
+        }
+
+        setWarehouse({
+          ...data,
+          images: Array.isArray(data.images) ? data.images : [],
+        });
       });
-  }, []);
+  }, [id]);
+
+  if (!warehouse) {
+    return null;
+  }
+
+  // Parse address if it's JSON string
+  const getFormattedAddress = (address: string) => {
+    try {
+      const parsed = typeof address === 'string' ? JSON.parse(address) : address;
+      if (parsed && typeof parsed === 'object' && parsed.address) {
+        return parsed.address;
+      }
+      return address;
+    } catch {
+      return address;
+    }
+  };
+
+  const infoItems = [
+    { label: 'Địa chỉ', value: getFormattedAddress(warehouse.address) },
+    { label: 'Giá', value: `${(warehouse.price * 1000).toLocaleString('vi-VN')} VND / tháng` },
+    { label: 'Diện tích', value: `${warehouse.area} mét vuông` },
+    { label: 'Số tầng', value: `${warehouse.floors} tầng` },
+    { label: 'Số cửa', value: `${warehouse.doors} cửa` },
+  ];
 
   return (
     <>
-      {warehouse ? (
-        <>
+      <Wrapper>
+        <Header>
           <h1>{warehouse.name || ''}</h1>
-          <Wrapper>
-            <FlexField>
-              <LeftSide>
-                <Title>Địa chỉ</Title>
-                <Title>Giá</Title>
-                <Title>Diện tích</Title>
-                <Title>Số tầng</Title>
-                <Title>Số cửa</Title>
-                <Title>Ảnh</Title>
-              </LeftSide>
-              <RightSide>
-                <Text>{warehouse.address}</Text>
-                <Text>{(warehouse.price * 1000).toLocaleString('vi-VN')} VND / tháng</Text>
-                <Text>{warehouse.area} mét vuông</Text>
-                <Text>{warehouse.floors} tầng</Text>
-                <Text>{warehouse.doors} cửa</Text>
-                <ImageContainer $hasSrc={!!warehouse.images.length}>
-                  {warehouse.images.length ? (
-                    warehouse.images.map((it: any) => (
-                      <a key={it.originalUrl} href={it.originalUrl} rel="noreferrer" target="_blank">
-                        <Image src={it.originalUrl} />
-                      </a>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </ImageContainer>
-              </RightSide>
-            </FlexField>
-            <Field>
-              <Title>Chi tiết kho bãi</Title>
-              {!isEmpty(warehouse.description) && (
-                <Description dangerouslySetInnerHTML={{ __html: warehouse.description }} />
+          <Button label="Quay lại" onClick={() => redirect('/request')} />
+        </Header>
+        <InfoGrid>
+          {infoItems.map(({ label, value }) => (
+            <InfoItem key={label}>
+              <InfoLabel>{label}</InfoLabel>
+              <InfoValue>{value}</InfoValue>
+            </InfoItem>
+          ))}
+          <InfoItem>
+            <InfoLabel>Ảnh</InfoLabel>
+            <ImageContainer $hasSrc={Boolean(warehouse.images.length)}>
+              {warehouse.images.length ? (
+                warehouse.images.map((image) => (
+                  <ImageLink key={image.originalUrl} href={image.originalUrl} rel="noreferrer" target="_blank">
+                    <Image alt={warehouse.name} src={image.originalUrl} />
+                  </ImageLink>
+                ))
+              ) : (
+                <Placeholder>Chưa có hình ảnh</Placeholder>
               )}
-            </Field>
-            <UpdateZone>
-              <FirstSection>
-                <Title>Xác nhận duyệt kho:</Title>
-                <RadioGroupRoot
-                  value={status}
-                  onValueChange={(e) => {
-                    setStatus(e);
-                  }}
-                >
-                  <Flex css={{ alignItems: 'center' }}>
-                    <RadioGroupItem id="approve" value="1">
-                      <RadioGroupIndicator />
-                    </RadioGroupItem>
-                    <Label htmlFor="approve">Đồng ý</Label>
-                  </Flex>
+            </ImageContainer>
+          </InfoItem>
+        </InfoGrid>
 
-                  <Flex css={{ alignItems: 'center' }}>
-                    <RadioGroupItem id="reject" value="2">
-                      <RadioGroupIndicator />
-                    </RadioGroupItem>
-                    <Label htmlFor="reject">Từ chối</Label>
-                  </Flex>
-                </RadioGroupRoot>
-              </FirstSection>
+        <DescriptionCard>
+          <SectionTitle>Chi tiết kho bãi</SectionTitle>
+          {!isEmpty(warehouse.description) ? (
+            <Description dangerouslySetInnerHTML={{ __html: warehouse.description ?? '' }} />
+          ) : (
+            <Placeholder>Chưa có mô tả</Placeholder>
+          )}
+        </DescriptionCard>
 
-              <TextareaContainer>
-                <Textarea
-                  disabled={status !== '2'}
-                  placeholder="Nhập lí do từ chối"
-                  onChange={(e) => {
-                    setRejectedReason(e.target.value);
-                  }}
-                />
-              </TextareaContainer>
+        <UpdateZone>
+          <UpdateTitle>Xác nhận duyệt kho</UpdateTitle>
+          <RadioGroupRoot
+            value={status}
+            onValueChange={(nextValue) => {
+              setStatus(nextValue);
+            }}
+          >
+            <RadioOption>
+              <RadioGroupItem id="approve" value="1">
+                <RadioGroupIndicator />
+              </RadioGroupItem>
+              <Label htmlFor="approve">Đồng ý</Label>
+            </RadioOption>
 
-              <div>
-                <ConfirmButton
-                  onClick={() => {
-                    console.log(status);
+            <RadioOption>
+              <RadioGroupItem id="reject" value="2">
+                <RadioGroupIndicator />
+              </RadioGroupItem>
+              <Label htmlFor="reject">Từ chối</Label>
+            </RadioOption>
+          </RadioGroupRoot>
 
-                    if (!status || (status === '2' && !rejectedReason)) {
-                      return;
-                    }
-                    handleUpdateWarehouseRequest();
-                  }}
-                >
-                  <span>Cập nhật</span>
-                </ConfirmButton>
-              </div>
-            </UpdateZone>
-          </Wrapper>
-        </>
-      ) : (
-        <></>
-      )}
+          <Textarea
+            disabled={status !== '2'}
+            placeholder="Nhập lí do từ chối"
+            onChange={(event) => {
+              setRejectedReason(event.target.value);
+            }}
+          />
+
+          <ConfirmButton
+            onClick={() => {
+              if (!status || (status === '2' && !rejectedReason)) {
+                return;
+              }
+              handleUpdateWarehouseRequest();
+            }}
+          >
+            <span>Cập nhật</span>
+          </ConfirmButton>
+        </UpdateZone>
+      </Wrapper>
     </>
   );
 };
 
 const Wrapper = styled.div`
-  margin: 32px 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  margin-top: 16px;
 `;
 
-const FlexField = styled.div`
+const Header = styled.div`
   display: flex;
-  gap: 48px;
-  align-items: start;
-`;
-const LeftSide = styled.div``;
-const RightSide = styled.div``;
-
-const Field = styled.div``;
-const UpdateZone = styled.div`
-  margin: 0 auto;
-  width: 500px;
-  padding: 16px;
-  border-radius: 4px;
-  border: 1px solid #c2c2c2;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 
-  text-align: center;
-`;
-const Title = styled.h4``;
-const Text = styled.h4`
-  font-weight: normal;
-`;
+  h1 {
+    margin: 0;
+  }
 
-const Description = styled.div`
-  border: 1px solid #c2c2c2;
-  padding: 16px 4px;
-  border-radius: 4px;
-`;
-
-const ShowImageStyle = css`
-  height: fit-content;
-  padding: 4px;
-
-  img {
-    height: 120px;
-    width: 120px;
+  button {
+    padding: 8px 16px !important;
   }
 `;
 
-const ImageContainer = styled.div<{ $hasSrc?: boolean }>`
-  height: 0;
-  ${({ $hasSrc }) => ($hasSrc ? ShowImageStyle : '')}
-  margin: 0 auto;
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--admin-radius-lg);
+  background: var(--admin-surface);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
 `;
 
-const Image = styled.img.attrs({ id: 'uploaded-image' })`
-  border-radius: 4px;
+const InfoItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const InfoLabel = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-primary);
+`;
+
+const InfoValue = styled.span`
+  display: block;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  color: var(--admin-text-primary);
+  letter-spacing: 0.01em;
+`;
+
+const ImageContainer = styled.div<{ $hasSrc?: boolean }>`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+  ${({ $hasSrc }) => (!$hasSrc ? 'opacity: 0.65;' : '')}
+`;
+
+const ImageLink = styled.a`
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: border-color 180ms ease;
+
+  &:hover {
+    border-color: rgba(14, 165, 233, 0.6);
+  }
+`;
+
+const Image = styled.img`
+  width: 100%;
+  height: 120px;
   object-fit: cover;
   object-position: center;
+`;
+
+const DescriptionCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--admin-radius-lg);
+  background: var(--admin-surface);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
+`;
+
+const SectionTitle = styled.h4`
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--admin-primary);
+`;
+
+const Description = styled.div`
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 18px;
+  background: var(--admin-surface-muted);
+  color: var(--admin-text-secondary);
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 12px;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const Placeholder = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(226, 232, 240, 0.4);
+  color: var(--admin-text-tertiary);
+  font-size: 14px;
+`;
+
+const UpdateZone = styled.div`
+  margin: 0 auto;
+  width: 100%;
+  max-width: 560px;
+  padding: clamp(20px, 3vw, 32px);
+  border-radius: var(--admin-radius-lg);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  background: var(--admin-surface);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: stretch;
+`;
+
+const UpdateTitle = styled.h4`
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--admin-primary);
+  letter-spacing: 0.02em;
 `;
 
 const RadioGroupRoot = stitches.styled(RadioGroup.Root, {
   display: 'flex',
   flexDirection: 'row',
-  gap: 20,
+  gap: 28,
+  justifyContent: 'center',
   alignItems: 'center',
+  flexWrap: 'wrap',
+});
+
+const RadioOption = stitches.styled('div', {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
 });
 
 const RadioGroupItem = stitches.styled(RadioGroup.Item, {
   all: 'unset',
-  backgroundColor: 'white',
-  width: 25,
-  height: 25,
-  borderRadius: '100%',
+  backgroundColor: '#ffffff',
+  width: 24,
+  height: 24,
+  borderRadius: '50%',
+  border: '2px solid rgba(148, 163, 184, 0.7)',
+  display: 'grid',
+  placeItems: 'center',
+  transition: 'border-color 180ms ease',
   boxShadow: `0 2px 10px ${blackA.blackA7}`,
-  '&:hover': { backgroundColor: blue.blue3 },
-  '&:focus': { boxShadow: `0 0 0 2px black` },
+  '&:hover': {
+    borderColor: 'rgba(37, 99, 235, 0.9)',
+  },
+  '&:focus': { boxShadow: '0 0 0 5px rgba(59, 130, 246, 0.25)' },
 });
 
 const RadioGroupIndicator = stitches.styled(RadioGroup.Indicator, {
+  width: '100%',
+  height: '100%',
+  borderRadius: '50%',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '100%',
-  height: '100%',
-  position: 'relative',
+  backgroundColor: 'rgba(37, 99, 235, 0.15)',
   '&::after': {
     content: '""',
-    display: 'block',
-    width: 11,
-    height: 11,
+    width: 10,
+    height: 10,
     borderRadius: '50%',
     backgroundColor: blue.blue10,
   },
 });
 
-const Flex = stitches.styled('div', { display: 'flex' });
-
 const Label = stitches.styled('label', {
-  color: 'black',
+  color: '#1f2937',
   fontSize: 15,
-  lineHeight: 1,
-  paddingLeft: 4,
+  fontWeight: 500,
+  lineHeight: 1.2,
+  paddingLeft: 6,
 });
 
-const ConfirmButton = styled(Button)``;
-
-const TextareaContainer = styled.div``;
-
 const Textarea = styled.textarea`
-  width: 450px;
-  margin-top: 16px;
-  height: 200px;
-  padding: 8px 16px;
-  border-radius: 4px;
+  width: 100%;
+  min-height: 160px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: var(--admin-surface-muted);
   font-family: inherit;
+  font-size: 15px;
+  color: var(--admin-text-primary);
+  resize: vertical;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+    background: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `;
 
-const FirstSection = styled.div`
-  display: flex;
-  flex-direction: column;
+const ConfirmButton = styled(Button)`
+  && {
+    align-self: center;
+    padding: 10px 28px;
+    border-radius: 999px;
+  }
 `;

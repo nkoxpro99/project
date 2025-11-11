@@ -8,6 +8,7 @@ import { RequestWarehouseDetails } from './components/customs/RequestWarehouseDe
 import { RequestWarehouseList } from './components/customs/RequestWarehouseList';
 import { Revenue } from './components/customs/Revenue';
 import { TransactionDetails } from './components/customs/TransactionDetails';
+import { UserDetails } from './components/customs/UserDetails';
 import { Users } from './components/customs/Users';
 import { WarehouseList } from './components/customs/WarehouseList';
 import { authProvider, dataProvider } from './provider';
@@ -21,9 +22,9 @@ const App = () => (
       <Route element={<RequestWarehouseDetails />} path="/request/:id" />
       <Route element={<Revenue />} path="/revenue" />
       <Route element={<Users />} path="/users" />
+      <Route element={<UserDetails />} path="/users/:id" />
     </CustomRoutes>
   </Admin>
 );
 
 export default App;
-

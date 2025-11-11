@@ -1,5 +1,16 @@
 import axios from 'axios';
-import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from 'chart.js';
+import {
+  ActiveElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  ChartData as ChartJsData,
+  ChartEvent,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from 'chart.js';
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import styled from 'styled-components';
@@ -16,22 +27,36 @@ import { generateDayLabelsInMonth, generateMonthLabels } from '../../utils/time.
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const CURRENT_YEAR = new Date().getFullYear();
+
+type RentedWarehouseApiRecord = {
+  rentedInfo: {
+    deposit: number;
+    total: number;
+    status: number;
+    rentedDate: string;
+    endDate: string;
+  };
+};
+
+type BarClickPayload = {
+  chart: ChartJS;
+  event: ChartEvent;
+  elements: ActiveElement[];
+};
+
+const toBarChartData = (data: ChartData): ChartJsData<'bar', number[], string> => ({
+  labels: data.labels,
+  datasets: data.datasets as ChartJsData<'bar', number[], string>['datasets'],
+});
+
 export const Revenue = () => {
   const [rentedWarehouseRevenue, setRentedWarehouseRevenue] = useState<RentedWarehouseRevenue[]>([]);
-  const [yearChartData, setYearChartData] = useState<ChartData | null>();
-  const [monthChartData, setMonthChartData] = useState<ChartData | null>();
+  const [yearChartData, setYearChartData] = useState<ChartData | null>(null);
+  const [monthChartData, setMonthChartData] = useState<ChartData | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
-  const onClickMonthBar = (e: any) => {
-    const elements = e.chart.getElementsAtEventForMode(
-      e as unknown as Event,
-      'nearest',
-      {
-        intersect: true,
-      },
-      true,
-    );
-
+  const onClickMonthBar = ({ elements }: BarClickPayload) => {
     if (elements.length) {
       setSelectedMonth(elements[0].index + 1);
     }
@@ -39,27 +64,25 @@ export const Revenue = () => {
 
   useEffect(() => {
     axios
-      .post<any, any>(`${apiUrl}/RentedWarehouse/static`, {
+      .post<RentedWarehouseApiRecord[]>(`${apiUrl}/RentedWarehouse/static`, {
         includes: ['Warehouse'],
       })
-      .then((m) =>
-        m.data.map((it: any) => {
-          const info = it.rentedInfo;
-          const rentedMonth = new Date(info.rentedDate).getMonth() + 1;
-          const rentedYear = new Date(info.rentedDate).getFullYear();
-          const rentedDay = new Date(info.rentedDate).getDate();
+      .then(({ data }) =>
+        (data || []).map((record) => {
+          const info = record.rentedInfo;
+          const rentedDate = new Date(info.rentedDate);
 
           return {
             deposit: info.deposit,
             total: info.total,
             status: info.status,
-            rentedMonth,
-            rentedYear,
-            rentedDay,
-          };
+            rentedMonth: rentedDate.getMonth() + 1,
+            rentedYear: rentedDate.getFullYear(),
+            rentedDay: rentedDate.getDate(),
+          } satisfies RentedWarehouseRevenue;
         }),
       )
-      .then((v) => setRentedWarehouseRevenue(v));
+      .then((transformed) => setRentedWarehouseRevenue(transformed));
   }, []);
 
   useEffect(() => {
@@ -70,7 +93,9 @@ export const Revenue = () => {
         {
           label: 'Doanh thu',
           data: calculateRevenuePerMonthByStatus(rentedWarehouseRevenue),
-          backgroundColor: '#667CFF',
+          backgroundColor: '#0ea5e9',
+          borderColor: '#0284c7',
+          borderWidth: 1,
         },
       ],
     });
@@ -78,69 +103,127 @@ export const Revenue = () => {
 
   useEffect(() => {
     if (selectedMonth) {
-      const dayLabelsInMonth = generateDayLabelsInMonth(selectedMonth, 2023);
+      const dayLabelsInMonth = generateDayLabelsInMonth(selectedMonth, CURRENT_YEAR);
       setMonthChartData({
         labels: dayLabelsInMonth,
         datasets: [
           {
             label: 'Doanh thu trong tháng',
-            data: calculateRevenuePerDayByStatus(rentedWarehouseRevenue, selectedMonth, 2023),
-            backgroundColor: '#2196f3',
+            data: calculateRevenuePerDayByStatus(rentedWarehouseRevenue, selectedMonth, CURRENT_YEAR),
+            backgroundColor: '#38bdf8',
+            borderColor: '#0ea5e9',
+            borderWidth: 1,
           },
         ],
       });
 
       setTimeout(() => {
         const monthBarChartElement = document.getElementById('month-bar-chart');
-
-        console.log(monthBarChartElement);
-        monthBarChartElement?.scrollIntoView({
-          behavior: 'smooth'
-        });
+        if (monthBarChartElement) {
+          monthBarChartElement.scrollIntoView({ behavior: 'smooth' });
+        }
       }, 100);
     }
-  }, [selectedMonth]);
+  }, [selectedMonth, rentedWarehouseRevenue]);
 
   return (
     <Container>
-      <h1>Doanh thu</h1>
-      <h4>Năm 2023</h4>
+      <PageHeader>
+        <h1>Thống kê doanh thu</h1>
+        <Subtitle>Biểu đồ phân tích doanh thu theo năm {CURRENT_YEAR}</Subtitle>
+      </PageHeader>
+
       {yearChartData ? (
-        <Bar
-          data={yearChartData as any}
-          options={generateBarChartOptions({
-            onClickCallback: onClickMonthBar,
-          })}
-        />
-      ) : (
-        <></>
-      )}
-      <Spacing />
+        <ChartCard>
+          <ChartHeading>Doanh thu theo tháng</ChartHeading>
+          <ChartWrapper>
+            <Bar
+              data={toBarChartData(yearChartData)}
+              options={generateBarChartOptions({ onClickCallback: onClickMonthBar })}
+            />
+          </ChartWrapper>
+        </ChartCard>
+      ) : null}
+
       {selectedMonth ? (
-        <MonthBarChartWrapper>
-          <h4>Tháng {selectedMonth}/2023</h4>
-          {monthChartData ? <Bar data={monthChartData as any} options={generateBarChartOptions()} /> : <></>}
-        </MonthBarChartWrapper>
-      ) : (
-        <></>
-      )}
+        <ChartCard id="month-bar-chart">
+          <ChartHeading>
+            Tháng {selectedMonth}/{CURRENT_YEAR}
+          </ChartHeading>
+          {monthChartData ? (
+            <ChartWrapper small>
+              <Bar data={toBarChartData(monthChartData)} options={generateBarChartOptions()} />
+            </ChartWrapper>
+          ) : null}
+        </ChartCard>
+      ) : null}
     </Container>
   );
 };
 
-const Container = styled.div`
-  margin: 16px 0 32px;
-`
-
-const Spacing = styled.div`
-  margin: 16px 0;
+const Container = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 `;
 
-const MonthBarChartWrapper = styled.div.attrs({
-  id: 'month-bar-chart',
-})`
-  background: rgba(0, 0, 0, 0.025);
-  padding: 8px 16px;
-  border-radius: 8px;
+const PageHeader = styled.header`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+  }
 `;
 
+const Subtitle = styled.span`
+  font-size: 14px;
+  color: var(--admin-text-tertiary);
+`;
+
+const ChartCard = styled.section`
+  padding: clamp(20px, 3vw, 36px);
+  border-radius: var(--admin-radius-lg);
+  background: var(--admin-surface);
+  border: 2px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (min-width: 1200px) {
+    padding: 36px 48px;
+  }
+`;
+
+const ChartHeading = styled.h4`
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--admin-primary);
+`;
+
+const ChartWrapper = styled.div<{ small?: boolean }>`
+  position: relative;
+  width: 100%;
+  height: ${(p) => (p.small ? '320px' : '420px')};
+  margin-bottom: 8px;
+
+  @media (max-width: 900px) {
+    height: ${(p) => (p.small ? '240px' : '320px')};
+  }
+
+  @media (max-width: 480px) {
+    height: ${(p) => (p.small ? '200px' : '260px')};
+  }
+
+  canvas {
+    /* ensure canvas fills wrapper when maintainAspectRatio is false */
+    width: 100% !important;
+    height: 100% !important;
+  }
+`;

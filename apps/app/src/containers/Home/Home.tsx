@@ -1,3 +1,4 @@
+// Main home page with warehouse search and listing
 import { isEmpty } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
