@@ -125,9 +125,10 @@ const Label = styled.label`
   display: inline-flex;
   align-items: center;
   border: 1px solid #e5e7eb;
-  min-width: 320px;
+  width: 100%;
   border-radius: 12px; /* aligned */
-  padding: 8px 12px;
+  padding: 0 12px;
+  height: 38px; /* align with Select trigger & button */
   gap: 8px;
   font-size: 13px;
   background: #ffffff;

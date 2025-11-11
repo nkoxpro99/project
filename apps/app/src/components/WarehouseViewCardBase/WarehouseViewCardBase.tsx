@@ -61,7 +61,7 @@ export const WarehouseViewCardBase = ({
       <ContentArea>
         <CardImage
           alt="Product"
-          src={isEmpty(images) ? 'https://picsum.photos/seed/picsum/400/300' : images[0].originalUrl}
+          src={images?.[0]?.originalUrl ?? 'https://picsum.photos/seed/picsum/400/300'}
         />
 
         <TextContainer>
@@ -133,7 +133,7 @@ export const WarehouseViewCardBase = ({
 const FONT_FAMILY = `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
 
 const CardContainer = styled.div`
-  width: 300px;
+  width: 100%;
   background-color: #ffffff;
   border: 1px solid ${violetDark.violet10};
   border-radius: 12px;
@@ -190,7 +190,7 @@ const CardName = styled.span`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 172px;
+  max-width: 100%;
   margin: 8px 0 0;
 
   & a:hover {
@@ -221,7 +221,7 @@ const CardAddressIcon = styled.div`
 `;
 
 const CardImage = styled.img`
-  width: 300px;
+  width: 100%;
   height: 180px;
   padding: 4px;
   border-radius: 12px 12px 0 0px;

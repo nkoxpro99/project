@@ -1,9 +1,10 @@
 // Main home page with warehouse search and listing
+import { CheckCircledIcon, MagnifyingGlassIcon, MobileIcon } from '@radix-ui/react-icons';
 import { isEmpty } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { CheckCircledIcon, MagnifyingGlassIcon, MobileIcon } from '@radix-ui/react-icons';
 import styled from 'styled-components';
 
+import { Button } from '@/components/Common/Button';
 import { PriceRangeSlider } from '@/components/Common/PriceRangeSlider';
 import { WardSelect } from '@/components/Common/WardSelect';
 import { WardValue } from '@/enums/ward-value.enum';
@@ -11,13 +12,13 @@ import warehouseService from '@/service/warehouse-service';
 
 import { HomeWarehouseViewCard } from '../../components/HomeWarehouseViewCard/HomeWarehouseViewCard';
 import { WareHouseModel, WarehouseStatus } from '../../models/warehouse.model';
-import { Button } from '@/components/Common/Button';
 
 export const Home = () => {
   const [warehouses, setWarehouses] = useState<WareHouseModel[]>([]);
   const warehouseRef = useRef<WareHouseModel[]>();
   const [priceFilter, setPriceFilter] = useState<[number, number]>();
   const [wardFilter, setWardFilter] = useState<WardValue>();
+  const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'area-asc' | 'area-desc'>();
 
   const handleExploreClick = () => {
     const el = document.getElementById('list');
@@ -42,9 +43,30 @@ export const Home = () => {
           (warehouse) => warehouse.price >= priceFilter[0] && warehouse.price <= priceFilter[1],
         );
       if (wardFilter) filterResult = filterResult.filter((warehouse) => warehouse.ward === wardFilter);
+
+      // sorting
+      if (sortBy) {
+        const arr = [...filterResult];
+        switch (sortBy) {
+          case 'price-asc':
+            arr.sort((a, b) => a.price - b.price);
+            break;
+          case 'price-desc':
+            arr.sort((a, b) => b.price - a.price);
+            break;
+          case 'area-asc':
+            arr.sort((a, b) => (a.area || 0) - (b.area || 0));
+            break;
+          case 'area-desc':
+            arr.sort((a, b) => (b.area || 0) - (a.area || 0));
+            break;
+        }
+        filterResult = arr;
+      }
+
       setWarehouses(filterResult);
     }
-  }, [priceFilter, wardFilter]);
+  }, [priceFilter, wardFilter, sortBy]);
 
   // TODO: If we call api to search, this code should be removed
   // const onFilter = (value: [number, number] | string, type: 'ward' | 'price') => {
@@ -77,9 +99,44 @@ export const Home = () => {
           </HeroSubtitle>
           <SearchBar>
             <WardSelect onSelect={(value: string) => setWardFilter(Number(value))} />
-            <PriceRangeSlider max={50000} min={100} onInput={(value: [number, number]) => setPriceFilter(value)} />
-            <Button onClick={handleExploreClick}>Khám phá</Button>
+            <ActionsRow>
+              <PriceRangeSlider max={50000} min={100} onInput={(value: [number, number]) => setPriceFilter(value)} />
+              <ActionButton onClick={handleExploreClick}>Khám phá</ActionButton>
+            </ActionsRow>
           </SearchBar>
+          <MetaBar>
+            <MetaLeft>
+              <strong>{warehouses.length}</strong> kết quả phù hợp
+            </MetaLeft>
+            <MetaActionsRow>
+              <SortCol>
+                <label htmlFor="sort">Sắp xếp:</label>
+                <SelectEl
+                  id="sort"
+                  value={sortBy ?? ''}
+                  onChange={(e) => {
+                    const v = e.target.value as typeof sortBy | '';
+                    setSortBy(v === '' ? undefined : (v as typeof sortBy));
+                  }}
+                >
+                  <option value="">Mặc định</option>
+                  <option value="price-asc">Giá tăng dần</option>
+                  <option value="price-desc">Giá giảm dần</option>
+                  <option value="area-asc">Diện tích tăng dần</option>
+                  <option value="area-desc">Diện tích giảm dần</option>
+                </SelectEl>
+              </SortCol>
+              <ClearButton
+                onClick={() => {
+                  setWardFilter(undefined);
+                  setPriceFilter(undefined);
+                  setSortBy(undefined);
+                }}
+              >
+                Bỏ lọc
+              </ClearButton>
+            </MetaActionsRow>
+          </MetaBar>
           <Highlights>
             <HighlightItem>
               <IconBadge>
@@ -131,6 +188,8 @@ const RADIUS = 12; // containers/cards
 const RADIUS_SM = 8; // small badges/icons
 
 const Main = styled.div`
+  /* Occupy ~85% of dynamic viewport width but never exceed old desktop max */
+  width: 85dvw; /* modern viewport unit (falls back to vw where unsupported) */
   max-width: 1260px;
   margin: 0 auto;
   padding: 24px 20px 80px;
@@ -161,9 +220,63 @@ const HeroSubtitle = styled.p`
 
 const SearchBar = styled.div`
   display: grid;
-  grid-template-columns: 320px 1fr 140px;
+  grid-template-columns: 320px 1fr; /* merge middle input + action button */
   gap: 16px;
   align-items: center;
+`;
+
+const ActionsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px; /* unified horizontal spacing between input and button */
+`;
+
+const MetaActionsRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px; /* same spacing */
+  justify-content: flex-end; /* push sort + clear to the right */
+`;
+
+const ActionButton = styled(Button)`
+  height: 38px;
+  border-radius: ${RADIUS}px;
+  width: 140px;
+  flex-shrink: 0;
+`;
+
+// Meta information row under the filters: results count, sort and clear
+const MetaBar = styled.div`
+  display: grid;
+  grid-template-columns: 320px 1fr; /* mirror new SearchBar layout */
+  gap: 16px;
+  align-items: center;
+  margin: 6px 0 8px 0;
+`;
+
+const MetaLeft = styled.div`
+  color: #334155;
+  strong { color: #0f172a; }
+`;
+
+const SortCol = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  label { color: #334155; font-size: 13px; }
+`;
+
+const SelectEl = styled.select`
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: ${RADIUS_SM}px;
+  padding: 0 10px;
+  color: #111827;
+`;
+
+/* Reuse ActionButton styling for the clear button */
+const ClearButton = styled(ActionButton)`
 `;
 
 const Highlights = styled.div`
@@ -224,9 +337,25 @@ const SectionHeader = styled.div`
 `;
 
 const GridContainer = styled.div`
-  width: 1260px;
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 300px);
-  justify-content: space-between;
+  /* Force 4 columns; cards shrink fluidly. Min 240px keeps content readable */
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  column-gap: clamp(12px, 1.8vw, 20px);
   row-gap: 20px;
+
+  @supports not (width: 85dvw) {
+    /* Fallback tweak if dynamic viewport units unsupported */
+    column-gap: 16px;
+  }
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    column-gap: clamp(10px, 1.2vw, 16px);
+  }
+
+  @media (max-width: 950px) {
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    column-gap: clamp(8px, 1vw, 14px);
+  }
 `;
