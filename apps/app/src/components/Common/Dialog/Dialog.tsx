@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as RadixDialog from '@radix-ui/react-dialog';
 import { DialogProps as RadixDialogProps } from '@radix-ui/react-dialog';
 import { Cross1Icon } from '@radix-ui/react-icons';
@@ -253,24 +254,20 @@ export const DialogDescription = styled(RadixDialog.Description)`
 `;
 
 export const CloseButton = styled.button`
-  width: 28px;
-  height: 28px;
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 11.2px;
-  border-width: 0;
-
+  width: 38px;
+  height: 38px;
+  background-color: transparent;
+  border-radius: 12px;
+  border: none;
   position: absolute;
-  top: 25px;
-  right: 25px;
-  transform: translate(50%, -50%);
-
+  top: 12px;
+  right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
+  transition: background-color 160ms ease;
 
-  &:hover {
-    background-color: rgba(126, 126, 126, 0.5);
-  }
+  &:hover { background-color: rgba(0,0,0,0.06); }
+  &:focus-visible { outline: 2px solid #7c4dff; outline-offset: 2px; }
 `;

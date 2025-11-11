@@ -37,7 +37,7 @@ export const AddComment = ({ onCommentSent }: AddCommentProp) => {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
-      <Button onClick={handleCommentSent}>Bình luận</Button>
+      <SendButton onClick={handleCommentSent}>Bình luận</SendButton>
     </Container>
   );
 };
@@ -55,4 +55,9 @@ const Textarea = styled(TextAreaAutoSize)`
   display: block;
   width: 100%;
   resize: none;
+`;
+
+// Match action buttons sizing across details/comments sections
+const SendButton = styled(Button)`
+  min-width: 140px;
 `;

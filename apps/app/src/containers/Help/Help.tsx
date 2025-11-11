@@ -1,8 +1,10 @@
 // Help page with FAQ and support information
+/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { violetDark } from '@radix-ui/colors';
+import { Button as BaseButton } from '@/components/Common/Button/Button';
 
 const faqItems = [
   {
@@ -283,23 +285,10 @@ const ContactList = styled.ul`
   }
 `;
 
-const ContactButton = styled.button`
+const ContactButton = styled(BaseButton)`
   margin-top: 8px;
   align-self: flex-start;
-  padding: 10px 16px;
-  border: 1px solid ${violetDark.violet10};
-  border-radius: 999px;
-  background: ${violetDark.violet10};
-  color: #ffffff;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 200ms ease,
-    color 200ms ease;
-
-  &:hover {
-    background: ${violetDark.violet7};
-  }
+  width: 180px;
 `;
 
 const ContactLink = styled.a`

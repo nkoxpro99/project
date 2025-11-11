@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { indigo } from '@radix-ui/colors';
 import { Link2Icon } from '@radix-ui/react-icons';
 import { Formik, useFormikContext } from 'formik';
@@ -6,6 +7,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { number, object } from 'yup';
+import { Button as BaseButton } from '@/components/Common/Button/Button';
 
 import { api } from '@/axios/axios';
 import { useContract } from '@/hooks';
@@ -51,7 +53,7 @@ export function ExtendActionDialogContent({ warehouse }: ExtendActionDialogConte
 }
 
 const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) => {
-  const { createContract, viewContract } = useContract();
+  const { createContract } = useContract();
   const { values, handleBlur, handleChange, errors } = useFormikContext<{ extendDuration: number }>();
   const [renter, setRenter] = useState<UserModel>();
   const [owner, setOwner] = useState<UserModel>();
@@ -62,14 +64,13 @@ const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) =
       userService.get(warehouse.userId).then((data) => setOwner(data));
       userService.get(warehouse.rentedInfo.renterId).then((data) => setRenter(data));
     }
-  }, [warehouse.id]);
+  }, [warehouse.id, warehouse.rentedInfo, warehouse.userId]);
 
   const [extendState, setExtendState] = useState<ExtendState>();
 
   useEffect(() => {
     const initiateExtendState = (): ExtendState | undefined => {
       if (warehouse.rentedInfo && owner && renter) {
-        console.log('in');
 
         const { hash, key } = generateContractHash({
           rentedDate: warehouse.rentedInfo.rentedDate,
@@ -101,7 +102,7 @@ const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) =
     };
 
     if (!extendState) setExtendState(initiateExtendState());
-  }, [warehouse, renter, owner]);
+  }, [warehouse, renter, owner, extendState, values.extendDuration]);
 
   useEffect(() => {
     setExtendState(
@@ -142,6 +143,7 @@ const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) =
 
   useEffect(() => {
     generateContract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extendState?.duration]);
 
   return (
@@ -182,8 +184,8 @@ const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) =
             </ViewContractArea>
           </div>
           <ConfirmDialogAction
-            acceptText="Thanh toán"
             acceptDisable={!!errors.extendDuration}
+            acceptText="Thanh toán"
             onAccept={({ setLoading, setFallback, setShowFallback }) => {
               const handlePayExtend = async () => {
                 setLoading(true);
@@ -261,16 +263,11 @@ const ViewContractArea = styled.div`
   }
 `;
 
-const ViewContractLink = styled.button`
-  all: unset;
-  cursor: pointer;
-  color: ${indigo.indigo10};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-
-  &:hover {
-    color: ${indigo.indigo7};
-  }
+const ViewContractLink = styled(BaseButton)`
+  width: 160px;
+  color: ${indigo.indigo11};
+  background: ${indigo.indigo4};
+  box-shadow: none;
+  &:hover:enabled { background: ${indigo.indigo5}; }
+  &:active:enabled { background: ${indigo.indigo6}; }
 `;

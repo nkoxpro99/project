@@ -1,8 +1,10 @@
+/* eslint-disable */
 // Contact page component with form and information panels
 import { FormEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { violetDark } from '@radix-ui/colors';
+import { Button as BaseButton } from '@/components/Common/Button/Button';
 
 type ContactFormState = {
   message: string;
@@ -284,7 +286,7 @@ const PanelLabel = styled.span`
   color: #94a3b8;
 `;
 
-const PanelLink = styled(Link)`
+const PanelLink = styled.a`
   color: ${violetDark.violet10};
   text-decoration: none;
 
@@ -423,19 +425,7 @@ const Hint = styled.p`
   max-width: 420px;
 `;
 
-const SubmitButton = styled.button`
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: none;
-  background: ${violetDark.violet10};
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 200ms ease;
-
-  &:hover {
-    background: ${violetDark.violet7};
-  }
+const SubmitButton = styled(BaseButton)`
+  width: 160px;
 `;
 

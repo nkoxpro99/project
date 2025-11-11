@@ -52,8 +52,6 @@ export const CreateWarehouse = () => {
       <CreateWarehouseProvider
         innerRef={createWarehouseFormRef}
         onFormValidChange={(payload) => {
-          console.log(payload);
-
           if (currentStepRef.current !== 0) return;
           if (payload.isValid) setStepperCanNext(true);
           else setStepperCanNext(false);
@@ -64,8 +62,6 @@ export const CreateWarehouse = () => {
           items={stepperItems}
           onComplete={() => {
             const { current: formikProps } = createWarehouseFormRef;
-
-            console.log(formikProps?.values);
 
             if (user) {
               const warehouse = { ...formikProps?.values, createdDate: moment().format(), userId: user.id };
@@ -110,17 +106,26 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px; /* create breathing room between title, stepper, and actions */
+  padding-top: 6px; /* nudge header content off the top border */
 `;
 
-const TextContainer = styled.div``;
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
 
 const ButtonContainer = styled.div`
   display: flex;
-  gap: 24px;
+  gap: 16px; /* tighter to avoid pushing into stepper */
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  margin: 0;
+`;
 
 const Detail = styled.span`
   color: #999;
+  margin: 0;
 `;

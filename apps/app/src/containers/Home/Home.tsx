@@ -239,8 +239,6 @@ const MetaActionsRow = styled.div`
 `;
 
 const ActionButton = styled(Button)`
-  height: 38px;
-  border-radius: ${RADIUS}px;
   width: 140px;
   flex-shrink: 0;
 `;
@@ -267,12 +265,14 @@ const SortCol = styled.div`
 `;
 
 const SelectEl = styled.select`
-  height: 36px;
+  height: 38px;
   border: 1px solid #e5e7eb;
   background: #fff;
   border-radius: ${RADIUS_SM}px;
-  padding: 0 10px;
+  padding: 0 12px;
   color: #111827;
+  font-size: 14px;
+  font-weight: 500;
 `;
 
 /* Reuse ActionButton styling for the clear button */

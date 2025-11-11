@@ -1,8 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import { violetDark } from '@radix-ui/colors';
 import { CheckCircledIcon, MagnifyingGlassIcon, MobileIcon, ReaderIcon } from '@radix-ui/react-icons';
+import React from 'react';
+import styled from 'styled-components';
 
 const AboutContainer = styled.div`
   max-width: 900px;
@@ -139,58 +138,7 @@ const FeatureDescription = styled.p`
   font-weight: 500;
 `;
 
-const CTASection = styled.div`
-  background: ${violetDark.violet10};
-  border-radius: 20px;
-  padding: 48px 40px;
-  text-align: center;
-  margin: 60px 0 40px;
-`;
-const CTATitle = styled.h3`
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 20px;
-`;
-
-const CTAText = styled.p`
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 32px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
-`;
-
-const CTAButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  color: ${violetDark.violet10};
-  padding: 16px 32px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  min-width: 160px;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    background: rgba(255, 255, 255, 0.95);
-  }
-`;
+// Removed CTA section styles as we no longer show it on the About page
 
 // About page component with company information and features
 export const About: React.FC = () => {
@@ -276,14 +224,7 @@ export const About: React.FC = () => {
         </Content>
       </Section>
 
-      <CTASection>
-        <CTATitle>Sẵn sàng bắt đầu hành trình?</CTATitle>
-        <CTAText>
-          Tham gia cộng đồng iRent ngay hôm nay để khám phá hàng ngàn kho bãi chất lượng và trải nghiệm dịch vụ hiện đại
-          nhất
-        </CTAText>
-        <CTAButton to="/home">Khám phá ngay →</CTAButton>
-      </CTASection>
+      {/* CTA section removed per request */}
     </AboutContainer>
   );
 };

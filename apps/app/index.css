@@ -1,6 +1,45 @@
 @import "./../../node_modules/react-image-gallery/styles/css/image-gallery.css";
 
-a {
-  text-decoration: none;
-  color: inherit;
+/* Global typography & reset */
+html {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px; /* base size */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+body {
+  margin: 0;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.25; margin: 0 0 12px; }
+h1 { font-size: 34px; }
+h2 { font-size: 28px; }
+h3 { font-size: 22px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+
+p { line-height: 1.55; margin: 0 0 12px; }
+small { font-size: 12px; }
+
+a { text-decoration: none; color: inherit; }
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Unified control height & radius applied via utility classes */
+.ui-control { height: 38px; border-radius: 12px; }
+
+/* Optional: utility for flex row alignment */
+.row-center { display: flex; align-items: center; }
+
+/* Smooth focus outline */
+:focus-visible { outline: 2px solid #7c4dff; outline-offset: 2px; }

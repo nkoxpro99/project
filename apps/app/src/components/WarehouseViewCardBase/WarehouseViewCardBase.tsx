@@ -199,7 +199,7 @@ const CardName = styled.span`
 `;
 
 const CardAddress = styled.span`
-  height: 30px;
+  height: 28px;
   display: flex;
   align-items: center;
   font-size: 13.5px;

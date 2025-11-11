@@ -6,7 +6,7 @@ import { StepperActionType } from './models/stepper-item.model';
 
 export type StepperButtonAction = {
   type: StepperActionType;
-  payload?: any;
+  payload?: unknown;
 };
 
 export type StepperButtonProps = Omit<ButtonProps, 'children' | 'onClick'> & {
@@ -34,7 +34,13 @@ export const StepperNextButton = ({
   };
 
   return (
-    <Button onClick={handleNextClick} {...otherProps} disabled={mergedDisabled}>
+    <Button
+      // reduce width slightly so it doesn't crowd the stepper line
+      css={{ minWidth: 120 }}
+      disabled={mergedDisabled}
+      onClick={handleNextClick}
+      {...otherProps}
+    >
       {isLastStep ? finishContent : buttonContent}
     </Button>
   );
@@ -57,7 +63,7 @@ export const StepperBackButton = ({
   };
 
   return (
-    <Button onClick={handleNextClick} {...otherProps} disabled={mergedDisabled}>
+    <Button css={{ minWidth: 120 }} disabled={mergedDisabled} onClick={handleNextClick} {...otherProps}>
       {buttonContent}
     </Button>
   );

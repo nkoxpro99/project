@@ -17,7 +17,6 @@ const Price = styled.span`
 
 const PayButton = styled(Button)`
   margin-top: 12px;
-  border-radius: 5px;
   width: calc(100% - 30px);
 `;
 
@@ -65,7 +64,7 @@ export function CheckoutForm(props: CheckoutFormProp) {
       redirect: 'if_required',
     });
 
-    console.log(paymentIntent, error);
+  // debug: handle Stripe response
 
     switch (error?.type) {
       case undefined:

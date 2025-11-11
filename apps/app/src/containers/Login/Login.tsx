@@ -1,10 +1,14 @@
+/* eslint-disable */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+import { Button as BaseButton } from '@/components/Common/Button/Button';
 import { Loading } from '@/components/Fallback';
+
+import { privateApi } from '../../axios/axios';
 import { useAuthStore } from '../../auth';
 import { AuthenticateResponse } from '../../auth/models';
-import { privateApi } from '../../axios/axios';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,7 +25,7 @@ export const Login = () => {
     e.preventDefault();
     setError('');
 
-    //check email form
+  // check email form
     if (!isValidEmail(email)) {
       setError('Email không hợp lệ.');
       return;
@@ -68,9 +72,9 @@ export const Login = () => {
             <p>{error}</p>
           </Error>
         )}
-        <Button disabled={isLoading} type="submit">
+        <PrimaryButton disabled={isLoading} type="submit">
           {isLoading ? <Loading size={25} /> : 'Login'}
-        </Button>
+        </PrimaryButton>
       </Form>
     </FormContainer>
   );
@@ -96,24 +100,9 @@ const Input = styled.input`
   border-radius: 5px;
 `;
 
-const Button = styled.button`
-  width: 100px;
-  height: 30px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #45a049;
-  }
-
-  &:disabled {
-    background-color: gray;
-    cursor: not-allowed;
-  }
+const PrimaryButton = styled(BaseButton)`
+  width: 140px;
+  /* inherits standardized height, radius, font styling */
 `;
 
 

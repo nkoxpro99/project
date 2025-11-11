@@ -54,8 +54,11 @@ export const WarehouseDetails = () => {
   };
 
   const resolveComment = (comment: ClientCommentModel) => {
+    if (!user) {
+      return Promise.reject(new Error('User is not authenticated'));
+    }
     const warehouseId = warehouse.id;
-    const userId = user!.id;
+    const userId = user.id;
     const createComment: CreateCommentModel = { userId, warehouseId, ...comment };
     return warehouseService.addComment(userId, warehouseId, createComment);
   };
@@ -81,11 +84,11 @@ export const WarehouseDetails = () => {
         <br />
         <ButtonContainer>
           {user?.role === Role.Renter && (
-            <Button disabled={warehouse.rented} onClick={goToRentingForm}>
+            <ActionButton disabled={warehouse.rented} onClick={goToRentingForm}>
               {warehouse.rented ? 'Đã thuê' : 'Thuê'}
-            </Button>
+            </ActionButton>
           )}
-          {warehouse.rented && <Button onClick={handleViewContract}>Xem hợp đồng</Button>}
+          {warehouse.rented && <ActionButton onClick={handleViewContract}>Xem hợp đồng</ActionButton>}
         </ButtonContainer>
         {!isOwner && (
           <IconActions>
@@ -127,7 +130,9 @@ export const WarehouseDetails = () => {
         <InteractionContainer>
           <AddressSearchInput placeholder="Nhập địa chỉ xuất phát của bạn" />
           <DirectionContainer>
-            <RouteDirection from={searchedAddress} to={address} />
+            {location && (
+              <RouteDirection from={searchedAddress || ''} location={location} to={address || ''} />
+            )}
           </DirectionContainer>
         </InteractionContainer>
         {warehouse.status === WarehouseStatus.Accepted && (
@@ -142,11 +147,7 @@ export const WarehouseDetails = () => {
 
 const ImageContainer = styled.div``;
 
-const Image = styled.img`
-  width: 100%;
-  object-fit: cover;
-  object-position: center center;
-`;
+/* Removed unused Image styled component */
 
 const BodyContainer = styled.div`
   position: relative;
@@ -156,18 +157,13 @@ const Title = styled.h1``;
 
 const Address = styled.h4``;
 
-const MapViewContainer = styled.div`
-  height: 500px;
-`;
+/* Removed unused MapViewContainer styled component */
 
 const Date = styled.span`
   color: #999;
 `;
 
-const DirectionText = styled.span`
-  color: #e03c31;
-  pointer-events: none;
-`;
+/* Removed unused DirectionText styled component */
 
 const IconActions = styled.div`
   position: absolute;
@@ -228,10 +224,18 @@ const Container = styled.div``;
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 12px;
   margin-top: 24px;
   text-align: right;
   cursor: pointer;
+`;
+
+// Unify action button size with comment section button
+const ActionButton = styled(Button)`
+  height: 38px;
+  border-radius: 12px;
+  min-width: 140px;
+  padding: 0 16px;
 `;
 
 const InteractionContainer = styled.div`

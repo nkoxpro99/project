@@ -8,7 +8,6 @@ import { Spinner } from '@/components/Common/Spinner';
 
 const PayButton = styled(Button)`
   margin-top: 12px;
-  border-radius: 5px;
   width: calc(100% - 30px);
 `;
 
@@ -41,7 +40,7 @@ export function CustomerCheckoutForm(props: CustomerCheckoutFormProp) {
 
     const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret);
 
-    console.log(paymentIntent, error);
+  // debug: handle Stripe response
 
     switch (error?.type) {
       case undefined:

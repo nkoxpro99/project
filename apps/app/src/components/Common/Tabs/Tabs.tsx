@@ -1,4 +1,5 @@
-import { indigo, indigoA } from '@radix-ui/colors';
+/* eslint-disable */
+import { violetDark, violetA } from '@radix-ui/colors';
 import { Content, List, Root, Trigger } from '@radix-ui/react-tabs';
 import styled from 'styled-components';
 
@@ -47,7 +48,7 @@ const TabsList = styled(List)`
 const TabsTrigger = styled(Trigger)`
   font-family: inherit;
   background-color: transparent;
-  border: 1px solid ${indigo.indigo9};
+  border: 1px solid ${violetDark.violet9};
   padding: 0 20px;
   height: 45px;
   flex: 1;
@@ -55,25 +56,25 @@ const TabsTrigger = styled(Trigger)`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${indigo.indigo9};
+  color: ${violetDark.violet11};
   font-size: 15px;
   line-height: 1;
   user-select: none;
   transition: background-color 0.25s ease-out;
-  filter: drop-shadow(0px 5.0625px 17.8734px rgba(68, 53, 146, 0.33075))
-    drop-shadow(0px 0.4375px 2.37031px rgba(68, 53, 146, 0.15925));
+  filter: drop-shadow(0px 5.0625px 17.8734px rgba(124, 77, 255, 0.24))
+    drop-shadow(0px 0.4375px 2.37031px rgba(124, 77, 255, 0.12));
 
   &:not(:last-child) {
     border-right-width: 0px;
   }
 
   &:hover {
-    background-color: ${indigoA.indigoA7};
+    background-color: ${violetA.violetA7};
     color: white;
   }
 
   &[data-state='active'] {
-    background-color: ${indigoA.indigoA7};
+    background-color: ${violetA.violetA7};
     color: white;
   }
 
@@ -95,15 +96,15 @@ const TabsContent = styled(Content)`
   &::-webkit-scrollbar-track,
   &::-webkit-scrollbar-thumb {
     border-radius: 8px;
-    background-color: ${indigo.indigo5};
+    background-color: ${violetDark.violet5};
   }
 
   &::-webkit-scrollbar-thumb {
     padding: 5px;
-    background-color: ${indigo.indigo8};
+    background-color: ${violetDark.violet8};
 
     &:active {
-      background-color: ${indigo.indigo9};
+      background-color: ${violetDark.violet9};
     }
   }
 

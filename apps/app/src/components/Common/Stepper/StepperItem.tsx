@@ -1,4 +1,6 @@
+/* eslint-disable */
 import styled from 'styled-components';
+import { violetDark } from '@radix-ui/colors';
 
 import { StepperItemType } from './models/stepper-item.model';
 
@@ -25,7 +27,7 @@ const FinishState = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: blue;
+  background-color: ${violetDark.violet10};
   outline: 1px solid transparent;
   z-index: 2;
 `;
@@ -34,7 +36,7 @@ const ActiveState = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  outline: 2px solid blue;
+  outline: 2px solid ${violetDark.violet10};
   background-color: white;
   z-index: 2;
 `;

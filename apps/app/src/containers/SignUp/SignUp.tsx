@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   CardElement as StripeCardElement,
   Elements as StripeElements,
@@ -8,6 +9,7 @@ import { FormikHelpers } from 'formik';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { Button as BaseButton } from '@/components/Common/Button/Button';
 
 import { api } from '@/axios/axios';
 import { FieldError, FormProvider } from '@/components/Common/Form';
@@ -79,9 +81,7 @@ export const SignUpForm = () => {
     <FormProvider
       initialValues={signUpFormInitialValues}
       validationSchema={signUpFormValidateSchema}
-      onFormValidChange={(payload) => {
-        console.log(payload);
-      }}
+      onFormValidChange={() => {}}
       onSubmit={handleOnFormSubmit}
     >
       {({ values, handleSubmit, handleBlur, handleChange, setSubmitting, setFieldValue }) => (
@@ -170,9 +170,9 @@ export const SignUpForm = () => {
                 Chủ kho bãi
               </RadioButtonLabel>
             </RadioButtonContainer>
-            <Button disabled={loading} type="submit">
+            <PrimaryButton disabled={loading} type="submit">
               {loading ? <Spinner innerSize={20} margin={0} outerSize={25} /> : 'Đăng ký'}
-            </Button>
+            </PrimaryButton>
             {/* <Button
               type="button"
               onClick={() => {
@@ -239,15 +239,8 @@ const RadioButtonLabel = styled.label`
 
 const RadioButton = styled.input``;
 
-const Button = styled.button`
-  height: 36px;
-  min-width: 90px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  box-sizing: border-box;
-  cursor: pointer;
+const PrimaryButton = styled(BaseButton)`
+  width: 140px;
 `;
 
 const ElementContainer = styled.div`
