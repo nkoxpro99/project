@@ -43,6 +43,10 @@ export const AddComment = ({ onCommentSent }: AddCommentProp) => {
 };
 
 const Container = styled.div`
+  /* Adjustable sizing tokens for comment input/button */
+  --comment-control-height: 52px; /* matches single-line textarea; tweak as needed */
+  --comment-button-font-size: 15px; /* slightly larger label */
+
   display: flex;
   padding: 16px;
   gap: 24px;
@@ -50,14 +54,17 @@ const Container = styled.div`
 `;
 
 const Textarea = styled(TextAreaAutoSize)`
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 16px;
   display: block;
   width: 100%;
   resize: none;
+  min-height: var(--comment-control-height);
 `;
 
 // Match action buttons sizing across details/comments sections
 const SendButton = styled(Button)`
   min-width: 140px;
+  height: var(--comment-control-height);
+  font-size: var(--comment-button-font-size);
 `;

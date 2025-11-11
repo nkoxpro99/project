@@ -268,6 +268,11 @@ export const CloseButton = styled.button`
   cursor: pointer;
   transition: background-color 160ms ease;
 
-  &:hover { background-color: rgba(0,0,0,0.06); }
-  &:focus-visible { outline: 2px solid #7c4dff; outline-offset: 2px; }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+  &:focus-visible {
+    outline: 2px solid #7c4dff;
+    outline-offset: 2px;
+  }
 `;

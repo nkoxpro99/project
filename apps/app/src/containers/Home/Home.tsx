@@ -254,14 +254,19 @@ const MetaBar = styled.div`
 
 const MetaLeft = styled.div`
   color: #334155;
-  strong { color: #0f172a; }
+  strong {
+    color: #0f172a;
+  }
 `;
 
 const SortCol = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  label { color: #334155; font-size: 13px; }
+  label {
+    color: #334155;
+    font-size: 13px;
+  }
 `;
 
 const SelectEl = styled.select`
@@ -276,8 +281,7 @@ const SelectEl = styled.select`
 `;
 
 /* Reuse ActionButton styling for the clear button */
-const ClearButton = styled(ActionButton)`
-`;
+const ClearButton = styled(ActionButton)``;
 
 const Highlights = styled.div`
   display: grid;
@@ -317,7 +321,9 @@ const IconBadge = styled.span`
   align-items: center;
   justify-content: center;
   color: #334155;
-  svg { color: #334155; }
+  svg {
+    color: #334155;
+  }
 `;
 
 const SectionHeader = styled.div`

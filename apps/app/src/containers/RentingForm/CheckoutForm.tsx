@@ -64,7 +64,7 @@ export function CheckoutForm(props: CheckoutFormProp) {
       redirect: 'if_required',
     });
 
-  // debug: handle Stripe response
+    // debug: handle Stripe response
 
     switch (error?.type) {
       case undefined:

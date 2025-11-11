@@ -40,7 +40,7 @@ export function CustomerCheckoutForm(props: CustomerCheckoutFormProp) {
 
     const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret);
 
-  // debug: handle Stripe response
+    // debug: handle Stripe response
 
     switch (error?.type) {
       case undefined:

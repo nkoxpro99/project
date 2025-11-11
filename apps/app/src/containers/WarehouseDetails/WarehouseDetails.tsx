@@ -130,9 +130,7 @@ export const WarehouseDetails = () => {
         <InteractionContainer>
           <AddressSearchInput placeholder="Nhập địa chỉ xuất phát của bạn" />
           <DirectionContainer>
-            {location && (
-              <RouteDirection from={searchedAddress || ''} location={location} to={address || ''} />
-            )}
+            {location && <RouteDirection from={searchedAddress || ''} location={location} to={address || ''} />}
           </DirectionContainer>
         </InteractionContainer>
         {warehouse.status === WarehouseStatus.Accepted && (

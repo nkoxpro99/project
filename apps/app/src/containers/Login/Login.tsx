@@ -20,17 +20,17 @@ export const Login = () => {
 
   // available email check func
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-  // check email form
+    // check email form
     if (!isValidEmail(email)) {
       setError('Email không hợp lệ.');
       return;
     }
-    
+
     setLoading(true);
     privateApi
       .post<AuthenticateResponse>('auth/login', { Email: email, Password: password })
@@ -47,17 +47,16 @@ export const Login = () => {
         if (e.response) {
           if (e.response.status === 401) {
             setError('Email hoặc mật khẩu không đúng.');
-        } else if (e.response.status === 500) {
-          setError('Lỗi hệ thống, vui lòng thử lại sau.');
+          } else if (e.response.status === 500) {
+            setError('Lỗi hệ thống, vui lòng thử lại sau.');
+          } else {
+            setError('Đăng nhập thất bại, vui lòng thử lại.');
+          }
         } else {
-          setError('Đăng nhập thất bại, vui lòng thử lại.');
+          setError('Không thể kết nối tới máy chủ.');
         }
-      } else {
-        setError('Không thể kết nối tới máy chủ.');
-      }
-      setLoading(false);
+        setLoading(false);
       });
-
   };
 
   return (
@@ -104,7 +103,6 @@ const PrimaryButton = styled(BaseButton)`
   width: 140px;
   /* inherits standardized height, radius, font styling */
 `;
-
 
 const Error = styled.div`
   margin-top: 5px;

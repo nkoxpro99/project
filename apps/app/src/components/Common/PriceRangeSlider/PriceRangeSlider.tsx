@@ -28,7 +28,7 @@ export const PriceRangeSlider = (props: PriceRangeSliderProps) => {
   }, []);
 
   return (
-  <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>
         <Label>
           <span className="prefix">Giá</span>

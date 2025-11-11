@@ -59,10 +59,7 @@ export const WarehouseViewCardBase = ({
     <CardContainer className={className} onClick={handleCardClick} onDoubleClick={handleCardDoubleClick}>
       {!isEmpty(actions) && renderCardOptions()}
       <ContentArea>
-        <CardImage
-          alt="Product"
-          src={images?.[0]?.originalUrl ?? 'https://picsum.photos/seed/picsum/400/300'}
-        />
+        <CardImage alt="Product" src={images?.[0]?.originalUrl ?? 'https://picsum.photos/seed/picsum/400/300'} />
 
         <TextContainer>
           <CardName>

@@ -216,7 +216,7 @@ const HeroSection = styled.section`
 const HeroTitle = styled.h1`
   margin: 0 0 12px 0;
   font-size: clamp(28px, 4vw, 36px);
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
 `;
 
@@ -260,7 +260,7 @@ const Panel = styled.div`
 const PanelTitle = styled.h3`
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
 `;
 
@@ -289,6 +289,7 @@ const PanelLabel = styled.span`
 const PanelLink = styled.a`
   color: ${violetDark.violet10};
   text-decoration: none;
+  font-weight: 600;
 
   &:hover {
     text-decoration: underline;
@@ -298,7 +299,7 @@ const PanelLink = styled.a`
 
 const PanelValue = styled.span`
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
 `;
 
@@ -330,7 +331,7 @@ const FormHeader = styled.header`
 const FormTitle = styled.h2`
   margin: 0;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
 `;
 
@@ -347,6 +348,7 @@ const SuccessBanner = styled.div`
   border: 1px solid #bae6fd;
   color: #0369a1;
   font-size: 14px;
+  font-weight: 600;
 `;
 
 const FieldGrid = styled.div`
@@ -370,7 +372,7 @@ const Field = styled.div`
 
 const Label = styled.label`
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2937;
 `;
 
@@ -378,7 +380,7 @@ const sharedInputStyles = `
   width: 100%;
   min-width: 0;
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #d1d5db;
   background: #ffffff;
   font-size: 14px;
@@ -389,7 +391,7 @@ const sharedInputStyles = `
 
   &:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: ${violetDark.violet9};
   }
 
   &::placeholder {
@@ -428,4 +430,3 @@ const Hint = styled.p`
 const SubmitButton = styled(BaseButton)`
   width: 160px;
 `;
-

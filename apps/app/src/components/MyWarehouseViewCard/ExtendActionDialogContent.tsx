@@ -71,7 +71,6 @@ const ExtendActionDialogForm = ({ warehouse }: ExtendActionDialogContentProps) =
   useEffect(() => {
     const initiateExtendState = (): ExtendState | undefined => {
       if (warehouse.rentedInfo && owner && renter) {
-
         const { hash, key } = generateContractHash({
           rentedDate: warehouse.rentedInfo.rentedDate,
           renterId: renter.id,
@@ -268,6 +267,10 @@ const ViewContractLink = styled(BaseButton)`
   color: ${indigo.indigo11};
   background: ${indigo.indigo4};
   box-shadow: none;
-  &:hover:enabled { background: ${indigo.indigo5}; }
-  &:active:enabled { background: ${indigo.indigo6}; }
+  &:hover:enabled {
+    background: ${indigo.indigo5};
+  }
+  &:active:enabled {
+    background: ${indigo.indigo6};
+  }
 `;
