@@ -2,8 +2,7 @@ import { blackA, mauve, violet } from '@radix-ui/colors';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import * as Select from '@radix-ui/react-select';
 import { styled } from '@stitches/react';
-import { debounce } from 'lodash';
-import React, { ReactNode, useCallback } from 'react';
+import React, { ReactNode } from 'react';
 
 import { WARD_OPTIONS } from '@/constants/ward-options.constant';
 import { WardValue } from '@/enums/ward-value.enum';
@@ -19,17 +18,13 @@ type WardSelectProps = {
 
 export const WardSelect = (props: WardSelectProps) => {
   const { onSelect } = props;
-  const debouncedOnSelect = useCallback(
-    debounce((value: string) => onSelect?.(value), 400),
-    [],
-  );
 
   return (
     <Select.Root
       defaultValue={props.defaultValue}
       name={props.name}
       value={props.value}
-      onValueChange={(value) => debouncedOnSelect(value)}
+      onValueChange={(value) => onSelect?.(value)}
     >
       <SelectTrigger aria-label="Food" style={props.triggerStyles}>
         <Select.Value placeholder="Chọn quận" />
@@ -67,17 +62,18 @@ const SelectTrigger = styled(Select.SelectTrigger, {
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
-  borderRadius: 4,
-  padding: '0 15px',
+  borderRadius: 12,
+  padding: '0 12px',
   fontSize: 13,
   lineHeight: 1,
-  height: 35,
+  height: 38,
   gap: 5,
   backgroundColor: 'white',
   color: violet.violet11,
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
-  '&:hover': { backgroundColor: mauve.mauve3 },
-  '&:focus': { boxShadow: `0 0 0 2px black` },
+  border: '1px solid #e5e7eb',
+  boxShadow: 'none',
+  '&:hover': { backgroundColor: mauve.mauve2 },
+  '&:focus': { boxShadow: `0 0 0 2px ${blackA.blackA7}` },
   '&[data-placeholder]': { color: violet.violet9 },
 });
 
@@ -86,15 +82,18 @@ const SelectIcon = styled(Select.SelectIcon, {
 });
 
 const SelectContent = styled(Select.Content, {
-  zIndex: 99,
+  zIndex: 200,
   overflow: 'hidden',
   backgroundColor: 'white',
-  borderRadius: 6,
-  boxShadow: '0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)',
+  borderRadius: 12,
+  border: '1px solid #e5e7eb',
+  minWidth: 340,
+  maxHeight: 420,
+  boxShadow: '0 6px 18px rgba(15, 23, 42, 0.06)',
 });
 
 const SelectViewport = styled(Select.Viewport, {
-  padding: 5,
+  padding: 6,
 });
 
 type SelectItemProps = {
@@ -114,14 +113,14 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(({ children
 });
 
 const StyledItem = styled(Select.Item, {
-  fontSize: 13,
+  fontSize: 16,
   lineHeight: 1,
   color: violet.violet11,
-  borderRadius: 3,
+  borderRadius: 8,
   display: 'flex',
   alignItems: 'center',
-  height: 25,
-  padding: '0 35px 0 25px',
+  height: 44,
+  padding: '0 36px 0 28px',
   position: 'relative',
   userSelect: 'none',
 
@@ -135,20 +134,12 @@ const StyledItem = styled(Select.Item, {
     backgroundColor: violet.violet9,
     color: violet.violet1,
   },
+  '&[data-state="checked"]': {
+    fontWeight: 600,
+  },
 });
 
-const SelectLabel = styled(Select.Label, {
-  padding: '0 25px',
-  fontSize: 12,
-  lineHeight: '25px',
-  color: mauve.mauve11,
-});
-
-const SelectSeparator = styled(Select.Separator, {
-  height: 1,
-  backgroundColor: violet.violet6,
-  margin: 5,
-});
+// Removed unused SelectLabel and SelectSeparator for cleaner bundle
 
 const StyledItemIndicator = styled(Select.ItemIndicator, {
   position: 'absolute',

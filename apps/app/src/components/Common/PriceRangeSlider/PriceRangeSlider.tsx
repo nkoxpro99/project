@@ -3,8 +3,7 @@ import './style.css';
 
 import { violetDark } from '@radix-ui/colors';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { debounce } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import RangeSlider from 'react-range-slider-input';
 import styled from 'styled-components';
 
@@ -22,16 +21,21 @@ export const PriceRangeSlider = (props: PriceRangeSliderProps) => {
   const { min, max, onInput } = props;
   const [value, setValue] = useState<[number, number]>([min, max]);
   const [appliedValue, setAppliedValue] = useState<[number, number]>([min, max]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    console.log('123');
+    // initialize or cleanup if needed later
   }, []);
 
   return (
-    <DropdownMenu.Root>
+  <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>
         <Label>
-          Giá: {formatPrice(appliedValue[0])} VND - {formatPrice(appliedValue[1])} VND
+          <span className="prefix">Giá</span>
+          <span className="value">{formatPrice(appliedValue[0])}</span>
+          <span className="dash">—</span>
+          <span className="value">{formatPrice(appliedValue[1])}</span>
+          <span className="suffix">VND / THÁNG</span>
         </Label>
       </DropdownMenu.Trigger>
 
@@ -39,9 +43,15 @@ export const PriceRangeSlider = (props: PriceRangeSliderProps) => {
         <DropdownMenu.Content>
           <Container>
             <Title>
-              <Text>{formatPrice(value[0])} VND</Text>
-              <Text>-</Text>
-              <Text>{formatPrice(value[1])} VND</Text>
+              <ValueBlock>
+                <div className="num">{formatPrice(value[0])}</div>
+                <div className="unit">VND</div>
+              </ValueBlock>
+              <Separator>→</Separator>
+              <ValueBlock>
+                <div className="num">{formatPrice(value[1])}</div>
+                <div className="unit">VND</div>
+              </ValueBlock>
             </Title>
             <RangeSlider
               defaultValue={[value[0], value[1]]}
@@ -56,13 +66,15 @@ export const PriceRangeSlider = (props: PriceRangeSliderProps) => {
                 onClick={() => {
                   onInput?.(value);
                   setAppliedValue(value);
+                  setOpen(false);
                 }}
               >
                 Áp dụng
               </Button>
             </ButtonContainer>
           </Container>
-          <DropdownMenu.Arrow style={{ fill: '#216ba5' }} />
+          {/* Arrow color matches panel background for a clean look */}
+          <DropdownMenu.Arrow style={{ fill: '#ffffff' }} />
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
@@ -70,33 +82,77 @@ export const PriceRangeSlider = (props: PriceRangeSliderProps) => {
 };
 
 const Container = styled.div`
-  width: 300px;
-  background: white;
-  padding: 16px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  width: 340px;
+  background: #ffffff;
+  padding: 18px 16px 22px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px; /* aligned with page radius */
 `;
 
 const Title = styled.div`
   display: flex;
-  gap: 12px;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+  justify-content: center;
 `;
 
-const Text = styled.span``;
+const ValueBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .num {
+    font-size: 18px;
+    font-weight: 600;
+    color: ${violetDark.violet11};
+  }
+  .unit {
+    font-size: 11px;
+    color: ${violetDark.violet9};
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+`;
+
+const Separator = styled.div`
+  font-size: 18px;
+  color: ${violetDark.violet10};
+  font-weight: 600;
+`;
 
 const Label = styled.label`
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  border: 1px solid ${violetDark.violet10};
-  width: 250px;
-  border-radius: 4px;
-  justify-content: center;
-  font-size: 12px;
-  color: ${violetDark.violet10};
+  border: 1px solid #e5e7eb;
+  min-width: 320px;
+  border-radius: 12px; /* aligned */
+  padding: 8px 12px;
+  gap: 8px;
+  font-size: 13px;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: none;
+  .prefix {
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .value {
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .dash {
+    opacity: 0.6;
+  }
+  .suffix {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #475569;
+  }
 `;
 
 const ButtonContainer = styled.div`
-  margin-top: 36px;
+  margin-top: 28px;
   text-align: right;
 `;

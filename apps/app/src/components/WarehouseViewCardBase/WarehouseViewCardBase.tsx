@@ -1,4 +1,4 @@
-import { blueA } from '@radix-ui/colors';
+import { blueA, violetDark } from '@radix-ui/colors';
 import { HomeIcon, SquareIcon, TimerIcon } from '@radix-ui/react-icons';
 import { isEmpty } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -61,7 +61,7 @@ export const WarehouseViewCardBase = ({
       <ContentArea>
         <CardImage
           alt="Product"
-          src={isEmpty(images) ? 'https://picsum.photos/seed/picsum/400/300' : images![0].originalUrl}
+          src={isEmpty(images) ? 'https://picsum.photos/seed/picsum/400/300' : images[0].originalUrl}
         />
 
         <TextContainer>
@@ -87,7 +87,7 @@ export const WarehouseViewCardBase = ({
               <WarehouseStatusLabel status={warehouse.status}></WarehouseStatusLabel>
               {warehouse.status === WarehouseStatus.Rejected && (
                 <>
-                  <Separator start={5} end={5} />
+                  <Separator end={5} start={5} />
                   <RejectedReason>
                     <strong>Lý do từ chối:</strong> {warehouse.rejectedReason}
                   </RejectedReason>
@@ -130,19 +130,22 @@ export const WarehouseViewCardBase = ({
   );
 };
 
+const FONT_FAMILY = `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+
 const CardContainer = styled.div`
   width: 300px;
   background-color: #ffffff;
-  border: 1px solid ${blueA.blueA9};
-  border-radius: 4px;
+  border: 1px solid ${violetDark.violet10};
+  border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   margin: 0 auto;
   transition: box-shadow 0.5s ease;
   isolation: isolate;
+  font-family: ${FONT_FAMILY};
 
   &:hover {
-    box-shadow: 0 2px 4px ${blueA.blueA6};
+    box-shadow: 0 2px 4px ${violetDark.violet6};
   }
 `;
 
@@ -160,7 +163,7 @@ const TextContainer = styled.div`
 `;
 
 const CardArea = styled.span`
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: normal;
   margin-top: 0px;
   display: flex;
@@ -183,7 +186,7 @@ const RentedInfoSection = styled.div``;
 
 const CardName = styled.span`
   height: 25px;
-  font-size: 16px;
+  font-size: 18px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -199,7 +202,7 @@ const CardAddress = styled.span`
   height: 30px;
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: normal;
   color: #505050;
 `;
@@ -221,7 +224,7 @@ const CardImage = styled.img`
   width: 300px;
   height: 180px;
   padding: 4px;
-  border-radius: 8px 8px 0 0px;
+  border-radius: 12px 12px 0 0px;
   object-fit: cover;
   object-position: center;
   box-sizing: border-box;
@@ -242,8 +245,9 @@ const CardDate = styled.span`
 
 const PriceText = styled.span`
   margin-top: 24px;
-  font-weight: bold;
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
   text-align: right;
 `;
 
