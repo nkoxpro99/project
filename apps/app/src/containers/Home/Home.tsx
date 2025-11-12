@@ -1,13 +1,15 @@
 // Main home page with warehouse search and listing
+/* eslint-disable simple-import-sort/imports, import/order */
+import { useEffect, useRef, useState } from 'react';
 import { CheckCircledIcon, MagnifyingGlassIcon, MobileIcon } from '@radix-ui/react-icons';
 import { isEmpty } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { Button } from '@/components/Common/Button';
 import { PriceRangeSlider } from '@/components/Common/PriceRangeSlider';
-import { WardSelect } from '@/components/Common/WardSelect';
-import { WardValue } from '@/enums/ward-value.enum';
+import { ProvinceSelect } from '@/components/Common/ProvinceSelect/ProvinceSelect';
+import { SelectOption } from '@/models/select-option.model';
+import { extractProvinceFromAddress } from '@/utils/warehouse-address.util';
 import warehouseService from '@/service/warehouse-service';
 
 import { HomeWarehouseViewCard } from '../../components/HomeWarehouseViewCard/HomeWarehouseViewCard';
@@ -17,7 +19,8 @@ export const Home = () => {
   const [warehouses, setWarehouses] = useState<WareHouseModel[]>([]);
   const warehouseRef = useRef<WareHouseModel[]>();
   const [priceFilter, setPriceFilter] = useState<[number, number]>();
-  const [wardFilter, setWardFilter] = useState<WardValue>();
+  const [provinceFilter, setProvinceFilter] = useState<string | undefined>();
+  const [provinceOptions, setProvinceOptions] = useState<SelectOption[]>([]);
   const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'area-asc' | 'area-desc'>();
 
   const handleExploreClick = () => {
@@ -31,6 +34,15 @@ export const Home = () => {
         const filterWarehouses = data.filter((d) => d.status === WarehouseStatus.Accepted && !d.rented);
         warehouseRef.current = filterWarehouses;
         setWarehouses(warehouseRef.current);
+
+        // Build province options dynamically from data
+        const provinces = new Set<string>();
+        filterWarehouses.forEach((w) => {
+          const p = extractProvinceFromAddress(w.address);
+          if (p) provinces.add(p);
+        });
+        const opts: SelectOption[] = [{ label: 'Tất cả', value: '' }, ...Array.from(provinces).sort().map((p) => ({ label: p, value: p }))];
+        setProvinceOptions(opts);
       }
     });
   }, []);
@@ -42,7 +54,9 @@ export const Home = () => {
         filterResult = filterResult.filter(
           (warehouse) => warehouse.price >= priceFilter[0] && warehouse.price <= priceFilter[1],
         );
-      if (wardFilter) filterResult = filterResult.filter((warehouse) => warehouse.ward === wardFilter);
+      if (provinceFilter) {
+        filterResult = filterResult.filter((warehouse) => extractProvinceFromAddress(warehouse.address) === provinceFilter);
+      }
 
       // sorting
       if (sortBy) {
@@ -66,7 +80,7 @@ export const Home = () => {
 
       setWarehouses(filterResult);
     }
-  }, [priceFilter, wardFilter, sortBy]);
+  }, [priceFilter, provinceFilter, sortBy]);
 
   // TODO: If we call api to search, this code should be removed
   // const onFilter = (value: [number, number] | string, type: 'ward' | 'price') => {
@@ -98,7 +112,7 @@ export const Home = () => {
             Kết nối chủ kho với doanh nghiệp. Tối giản thao tác, minh bạch giá, hỗ trợ xuyên suốt.
           </HeroSubtitle>
           <SearchBar>
-            <WardSelect onSelect={(value: string) => setWardFilter(Number(value))} />
+            <ProvinceSelect options={provinceOptions} onSelect={(value: string) => setProvinceFilter(value || undefined)} />
             <ActionsRow>
               <PriceRangeSlider max={50000} min={100} onInput={(value: [number, number]) => setPriceFilter(value)} />
               <ActionButton onClick={handleExploreClick}>Khám phá</ActionButton>
@@ -128,7 +142,7 @@ export const Home = () => {
               </SortCol>
               <ClearButton
                 onClick={() => {
-                  setWardFilter(undefined);
+                  setProvinceFilter(undefined);
                   setPriceFilter(undefined);
                   setSortBy(undefined);
                 }}

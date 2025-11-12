@@ -1,1 +1,2 @@
-export * from './RouteDirection'
+// Deprecated export removed
+export {};

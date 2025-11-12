@@ -38,6 +38,21 @@ export const WarehouseList = () => {
   const listContext = useList<WarehouseRecord>({ data, resource: 'Warehouse' });
 
   useEffect(() => {
+    const formatAddress = (raw: unknown): string => {
+      if (typeof raw !== 'string') return '';
+      // Try to parse JSON string { address, position?, ward? }. Fallback to raw if not JSON
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && 'address' in parsed) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (parsed as any).address ?? raw;
+        }
+      } catch {
+        // not JSON -> leave as-is
+      }
+      return raw;
+    };
+
     axios
       .post<RawWarehouseRecord[]>(`${apiUrl}/warehouse/static`, {
         includes: ['RentedWarehouses', 'Comments', 'Comments.User', 'Images'],
@@ -45,7 +60,7 @@ export const WarehouseList = () => {
       .then(({ data: response }) => {
         const warehouses: WarehouseRecord[] = (response || []).map((it) => ({
           ...it,
-          address: JSON.parse(it.address).address,
+          address: formatAddress(it.address),
         }));
         setData(warehouses);
       });

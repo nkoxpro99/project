@@ -1,6 +1,3 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import { violetDark } from '@radix-ui/colors';
 import {
   ClockIcon,
@@ -11,6 +8,9 @@ import {
   MobileIcon,
   TwitterLogoIcon,
 } from '@radix-ui/react-icons';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 const FooterContainer = styled.footer`
   background: #1f2937;

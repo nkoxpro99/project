@@ -1,20 +1,21 @@
+/* eslint-disable simple-import-sort/imports, import/order */
+import { useCallback, useEffect, useState } from 'react';
+
 import { HeartIcon, RulerSquareIcon, StackIcon, ViewVerticalIcon } from '@radix-ui/react-icons';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { useAuthStore } from '@/auth';
 import { Carousel } from '@/components/Carousel';
 import { Button } from '@/components/Common/Button/Button';
 import { CommentSection } from '@/components/Feedback';
-import { MapSearchBoxInput, useMapWithSearchBox } from '@/components/Map';
-import { RouteDirection } from '@/components/RouteDirection';
+import { MapView } from '@/components/Map';
 import { Role } from '@/enums/role.enum';
 import { ClientCommentModel, CreateCommentModel } from '@/models/comment.model';
 import { WarehouseStatus } from '@/models/warehouse.model';
 import warehouseService from '@/service/warehouse-service';
 import { formatPrice } from '@/utils/format-price.util';
-import { resolveAddress, resolveLocation } from '@/utils/warehouse-address.util';
+import { resolveAddress, resolveLocation, buildGeocodeQuery, geocodeAddress, buildOsmSearchUrl, extractProvinceFromAddress } from '@/utils/warehouse-address.util';
 
 import { useWarehouseResolver } from '../../resolver/WarehouseResolver';
 import { convertTimestampToDate } from '../../utils/convert-timestamp-to-date.util';
@@ -39,9 +40,36 @@ export const WarehouseDetails = () => {
 
   const address = resolveAddress(warehouse.address);
   const location = resolveLocation(warehouse.address);
-  const { currentSearchPayload } = useMapWithSearchBox({ markerLocation: location });
-
-  const [searchedAddress, setSearchedAddress] = useState('');
+  const province = extractProvinceFromAddress(warehouse.address);
+  const [dynamicLocation, setDynamicLocation] = useState<typeof location | undefined>(undefined);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const geocodeQuery = buildGeocodeQuery(warehouse.address);
+  const handleTryGeocode = useCallback(async () => {
+    if (!geocodeQuery) return;
+    setGeoError(null);
+    setGeoLoading(true);
+    try {
+      const loc = await geocodeAddress(geocodeQuery);
+      if (loc) {
+        setDynamicLocation(loc);
+      } else {
+        setGeoError('Không tìm thấy vị trí phù hợp.');
+      }
+    } catch (e) {
+      setGeoError('Đã xảy ra lỗi khi tìm vị trí.');
+    } finally {
+      setGeoLoading(false);
+    }
+  }, [geocodeQuery]);
+  
+  // Tự động thử geocode khi chưa có tọa độ lưu và có địa chỉ hợp lệ
+  useEffect(() => {
+    if (!location && geocodeQuery && !dynamicLocation && !geoLoading) {
+      void handleTryGeocode();
+    }
+  }, [location, geocodeQuery, dynamicLocation, geoLoading, handleTryGeocode]);
+  // Google-based search/directions removed; destination-only map retained
 
   const navigate = useNavigate();
 
@@ -63,23 +91,53 @@ export const WarehouseDetails = () => {
     return warehouseService.addComment(userId, warehouseId, createComment);
   };
 
-  useEffect(() => {
-    setSearchedAddress(currentSearchPayload?.address || '');
-  }, [currentSearchPayload]);
+  useEffect(() => {}, []);
 
   return (
     <Container>
       <ImageContainer>
-        <Carousel images={warehouse.images}></Carousel>
+        <Carousel images={warehouse.images} />
       </ImageContainer>
       <BodyContainer>
         <Title>{warehouse?.name}</Title>
-        <Address>{address}</Address>
-        {/* {!!location && (
+        <Address>
+          {address}
+          {province ? <ProvinceTag> · {province}</ProvinceTag> : null}
+        </Address>
+        {(location || dynamicLocation) && (
           <MapViewContainer>
-            <MapView location={resolveLocation(warehouse.address)} />
+            <MapView height="260px" location={location || dynamicLocation} />
           </MapViewContainer>
-        )} */}
+        )}
+        {!location && !dynamicLocation && (
+          <MapViewContainer>
+            <FallbackBox>
+              <p className="text-sm mb-2">Chưa có tọa độ được lưu cho địa chỉ này.</p>
+              {geocodeQuery ? (
+                <div>
+                  <FallbackActions>
+                    {geoLoading ? (
+                      <HintText>Đang tự động tìm vị trí từ địa chỉ…</HintText>
+                    ) : (
+                      <FallbackButton disabled={geoLoading} onClick={handleTryGeocode}>
+                        Thử lại tìm vị trí
+                      </FallbackButton>
+                    )}
+                    <ManualLink href={buildOsmSearchUrl(geocodeQuery)} rel="noreferrer" target="_blank">
+                      Tra cứu thủ công trên OpenStreetMap
+                    </ManualLink>
+                  </FallbackActions>
+                  {geoError && <ErrorText>{geoError}</ErrorText>}
+                  {!geoLoading && !geoError && (
+                    <HintText>Đã dùng Photon / Nominatim để tìm vị trí. Ward chỉ là thông tin phụ.</HintText>
+                  )}
+                </div>
+              ) : (
+                <HintText>Không có địa chỉ hợp lệ để tìm.</HintText>
+              )}
+            </FallbackBox>
+          </MapViewContainer>
+        )}
         <Date>Tạo vào lúc: {warehouse?.createdDate ? convertTimestampToDate(warehouse?.createdDate) : ''}</Date>
         <br />
         <ButtonContainer>
@@ -93,30 +151,29 @@ export const WarehouseDetails = () => {
         {!isOwner && (
           <IconActions>
             <IconActionItem>
-              <HeartIcon></HeartIcon>
+              <HeartIcon />
               <Text>Yêu thích</Text>
             </IconActionItem>
           </IconActions>
         )}
-
         <MetricsContainer>
           <Price>{formatPrice(warehouse?.price)} VND/tháng</Price>
           <OtherMetrics>
             <OtherMetricItem>
-              <RulerSquareIcon color="#999" height={32} width={32}></RulerSquareIcon>
+              <RulerSquareIcon color="#999" height={32} width={32} />
               <Text>{warehouse?.area} mét vuông</Text>
             </OtherMetricItem>
             <OtherMetricItem>
-              <ViewVerticalIcon color="#999" height={32} width={32}></ViewVerticalIcon>
+              <ViewVerticalIcon color="#999" height={32} width={32} />
               <Text>{warehouse?.doors ?? 0} cửa</Text>
             </OtherMetricItem>
             <OtherMetricItem>
-              <StackIcon color="#999" height={32} width={32}></StackIcon>
+              <StackIcon color="#999" height={32} width={32} />
               <Text>{warehouse?.floors ?? 0} tầng</Text>
             </OtherMetricItem>
           </OtherMetrics>
         </MetricsContainer>
-        <h4>Mô tả kho bãi</h4>
+        <SectionLabel>Mô tả kho bãi</SectionLabel>
         {warehouse.description ? (
           <DescriptionContainer>
             <Description dangerouslySetInnerHTML={{ __html: warehouse.description }} />
@@ -126,13 +183,8 @@ export const WarehouseDetails = () => {
             <i>Không có mô tả gì ở đây cả</i>
           </small>
         )}
-        <h4>Tìm kiếm đường đi đến kho bãi</h4>
-        <InteractionContainer>
-          <AddressSearchInput placeholder="Nhập địa chỉ xuất phát của bạn" />
-          <DirectionContainer>
-            {location && <RouteDirection from={searchedAddress || ''} location={location} to={address || ''} />}
-          </DirectionContainer>
-        </InteractionContainer>
+        {/* Đã lược bỏ tính năng chỉ đường trực tiếp để tăng độ ổn định.
+            Người dùng có thể dùng liên kết trong bản đồ để mở xem chi tiết trên OSM. */}
         {warehouse.status === WarehouseStatus.Accepted && (
           <CommentsContainer>
             <CommentSection data={warehouse.comments} resolveComment={resolveComment} />
@@ -145,8 +197,6 @@ export const WarehouseDetails = () => {
 
 const ImageContainer = styled.div``;
 
-/* Removed unused Image styled component */
-
 const BodyContainer = styled.div`
   position: relative;
 `;
@@ -154,6 +204,10 @@ const BodyContainer = styled.div`
 const Title = styled.h1``;
 
 const Address = styled.h4``;
+const ProvinceTag = styled.small`
+  color: #64748b;
+  font-weight: normal;
+`;
 
 /* Removed unused MapViewContainer styled component */
 
@@ -219,6 +273,16 @@ const Text = styled.span``;
 
 const Container = styled.div``;
 
+const MapViewContainer = styled.div`
+  margin-top: 16px;
+  margin-bottom: 8px;
+  width: 100%;
+  /* Ensure consistent radius wrapper */
+  & > div {
+    width: 100%;
+  }
+`;
+
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -236,37 +300,67 @@ const ActionButton = styled(Button)`
   padding: 0 16px;
 `;
 
-const InteractionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
-  align-items: flex-start;
-`;
-
-const DirectionContainer = styled.div`
-  width: 100%;
-`;
-
-const inputStyles = css`
-  height: 50px;
-  padding: 16px;
-  border-radius: 4px;
-  border: 1px solid gray;
-  box-sizing: border-box;
-`;
-
-const AddressSearchInput = styled(MapSearchBoxInput)`
-  ${inputStyles};
-  width: 100%;
-`;
+/* Google-based directions/search UI removed */
 
 const DescriptionContainer = styled.div`
+  margin-top: 12px;
   margin-bottom: 16px;
 `;
 
 const Description = styled.div`
-  padding: 4px 16px;
+  padding: 8px 16px;
   border: 1px solid #c2c2c2;
   border-radius: 4px;
+  text-align: justify; /* căn đều hai bên để dễ đọc */
+  line-height: 1.6; /* giãn dòng thoáng hơn */
+  word-break: break-word;
+
+  /* Chuẩn hoá khoảng cách giữa các đoạn văn trong nội dung HTML */
+  p {
+    margin: 0 0 8px;
+  }
+`;
+
+const FallbackBox = styled.div`
+  padding: 16px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+`;
+
+const FallbackActions = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+`;
+
+const FallbackButton = styled(Button)`
+  height: 32px;
+  border-radius: 8px;
+  padding: 0 12px;
+`;
+
+const ManualLink = styled.a`
+  font-size: 13px;
+  color: #6d28d9;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ErrorText = styled.p`
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 12px;
+`;
+
+const HintText = styled.p`
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 12px;
+`;
+
+const SectionLabel = styled.h4`
+  margin: 16px 0 8px; /* thêm khoảng cách phía trên và dưới tiêu đề */
 `;

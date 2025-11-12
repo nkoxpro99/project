@@ -64,7 +64,13 @@ export const CreateWarehouse = () => {
             const { current: formikProps } = createWarehouseFormRef;
 
             if (user) {
-              const warehouse = { ...formikProps?.values, createdDate: moment().format(), userId: user.id };
+              const { ward, ...rest } = formikProps?.values ?? {};
+              const warehouse = {
+                ...rest,
+                ...(typeof ward === 'number' && !Number.isNaN(ward) ? { ward } : {}),
+                createdDate: moment().format(),
+                userId: user.id,
+              };
               api.post(`warehouse/`, warehouse).then(() => {
                 navigate('/list');
               });

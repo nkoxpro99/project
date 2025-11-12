@@ -1,32 +1,26 @@
+/* eslint-disable simple-import-sort/imports, import/order */
 import 'react-quill/dist/quill.snow.css';
 import './style.css';
 
 import { Field, Form, useFormikContext } from 'formik';
 import { useEffect } from 'react';
 import styled, { css } from 'styled-components';
+import { extractLatLngFromText as extractLatLngFromFreeText } from '@/utils/warehouse-address.util';
 
 import { UploadImageButton } from '@/containers/UploadImageButton/UploadImageButton';
-import { getWardFromMapWard } from '@/utils/get-ward-from-map.util';
+// import { getWardFromMapWard } from '@/utils/get-ward-from-map.util';
 
 import { FieldError } from '../Common/Form';
 import { RichTextEditor } from '../Common/RichTextEditor';
 import { SuffixInput } from '../Common/SuffixInput';
-import { WardSelect } from '../Common/WardSelect';
-import { MapContainer, MapSearchBoxInput, useMapWithSearchBox } from '../Map';
+// Removed ward selection in favor of province extracted from address
+// Removed Google Map search dependencies
 import { CreateWarehouseFormValuesType } from './CreateWarehouseProvider';
 
 export const CreateWarehouseForm = () => {
   const { handleSubmit, handleChange, handleBlur, values, setFieldValue } =
     useFormikContext<CreateWarehouseFormValuesType>();
-  const { currentSearchPayload } = useMapWithSearchBox();
-
-  useEffect(() => {
-    if (currentSearchPayload) {
-      setFieldValue('address', JSON.stringify(currentSearchPayload));
-      setFieldValue('mapSearch', currentSearchPayload?.address);
-      if (currentSearchPayload.ward) setFieldValue('ward', getWardFromMapWard(currentSearchPayload.ward));
-    }
-  }, [currentSearchPayload]);
+  useEffect(() => {}, []);
 
   return (
     <Container>
@@ -49,28 +43,23 @@ export const CreateWarehouseForm = () => {
               </FormField>
               <FormField>
                 <Label>Địa chỉ</Label>
-                <CreateWarehouseMapSearchBoxInput
+                <Input
                   defaultValue={values.mapSearch}
                   name="mapSearch"
-                  placeholder=""
+                  placeholder="Nhập địa chỉ (có thể kèm toạ độ: lat, lng)"
                   onBlur={handleBlur}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    const raw = e.target.value || '';
+                    // Build an address payload that includes coordinates if present
+                    const coords = extractLatLngFromFreeText(raw);
+                    const payload = coords ? JSON.stringify({ address: raw, position: coords }) : raw; // keep plain string if no coords
+                    setFieldValue('address', payload);
+                  }}
                 />
                 <FieldError errorFor={'address'} />
               </FormField>
-              <FormField>
-                <Label>Quận</Label>
-                <WardSelect
-                  allSelect
-                  name="ward"
-                  triggerStyles={{
-                    height: 50,
-                  }}
-                  value={values.ward?.toString()}
-                  onSelect={(value) => setFieldValue('ward', Number(value))}
-                />
-                <FieldError errorFor={'ward'} />
-              </FormField>
+              {/* Field 'Quận' removed: province is derived from address when needed */}
               <FormField>
                 <Label>Diện tích</Label>
                 <StyledSuffixInput
@@ -105,7 +94,7 @@ export const CreateWarehouseForm = () => {
                 />
                 <FieldError errorFor={'price'} />
               </FormField>
-              <CreateFormMapContainer />
+              {/* Map search box đã gỡ bỏ trong bản rút gọn này */}
             </RightSide>
           </TextInfo>
           <FormField>
@@ -173,16 +162,10 @@ const Input = styled.input`
 
 const StyledSuffixInput = styled(SuffixInput)``;
 
-const CreateWarehouseMapSearchBoxInput = styled(MapSearchBoxInput)`
-  ${inputStyles}
-  width: inherit;
-`;
+// Google Map search input removed
 
 const ImageInputContainer = styled.div``;
 
 const Text = styled.span``;
 
-const CreateFormMapContainer = styled(MapContainer)`
-  height: 300px;
-  width: 100%;
-`;
+// MapContainer removed

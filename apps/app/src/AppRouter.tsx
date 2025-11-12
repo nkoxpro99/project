@@ -9,8 +9,6 @@ import { Footer, Header } from './components/Common';
 import { Comment } from './components/Dev';
 import { NotFound } from './components/Fallback';
 import { MapView } from './components/Map';
-import { MapSearchBox } from './components/Map/MapSearchBox';
-import { RouteDirection } from './components/RouteDirection';
 import { UploadMultipleImages } from './components/UploadMultipleImages/UploadMultipleImages';
 import {
   About,
@@ -116,7 +114,7 @@ export const AppRouter = () => {
           </Route>
           <Route path="dev/*">
             <Route element={<UploadImageButton onImageUploaded={noop} />} path="upload" />
-            <Route element={<MapSearchBox />} path="map-search-box"></Route>
+            {/* map-search-box route removed */}
             <Route
               element={
                 <MapView
@@ -129,19 +127,7 @@ export const AppRouter = () => {
               path="map-view"
             ></Route>
             <Route element={<Contract />} path="contract"></Route>
-            <Route
-              element={
-                <RouteDirection
-                  from="360 Đ. Lê Duẩn, Tân Chính, Thanh Khê, Đà Nẵng 550000, Vietnam"
-                  location={{
-                    lat: 16.047079,
-                    lng: 108.20623,
-                  }}
-                  to="Thanh Lương 11, Hòa Xuân, Cẩm Lệ, Đà Nẵng 550000, Vietnam"
-                />
-              }
-              path="direction"
-            ></Route>
+            {/* direction route removed */}
             <Route element={<Comment />} path="comment"></Route>
             <Route
               element={

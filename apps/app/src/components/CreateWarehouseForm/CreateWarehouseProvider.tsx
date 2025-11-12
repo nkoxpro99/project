@@ -29,7 +29,6 @@ export type CreateWarehouseFormProps = ProviderProps<CreateWarehouseFormValuesTy
 export const CreateWarehouseProvider = ({ children, onFormValidChange, innerRef }: CreateWarehouseFormProps) => {
   const CreateWareHouseSchema = yup.object().shape({
     name: yup.string().label('Tên kho bãi').min(2).max(50).required(),
-    ward: yup.number().label('Quận').required(),
     address: yup.string().label('Địa chỉ').max(200).required(),
     area: yup.number().label('Diện tích').moreThan(0).required(),
     price: yup.number().label('Giá').moreThan(0).required(),
