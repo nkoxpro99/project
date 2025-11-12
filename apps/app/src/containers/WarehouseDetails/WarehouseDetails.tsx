@@ -1,7 +1,7 @@
 /* eslint-disable simple-import-sort/imports, import/order */
 import { useCallback, useEffect, useState } from 'react';
 
-import { HeartIcon, RulerSquareIcon, StackIcon, ViewVerticalIcon } from '@radix-ui/react-icons';
+import { RulerSquareIcon, StackIcon, ViewVerticalIcon } from '@radix-ui/react-icons';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -15,7 +15,14 @@ import { ClientCommentModel, CreateCommentModel } from '@/models/comment.model';
 import { WarehouseStatus } from '@/models/warehouse.model';
 import warehouseService from '@/service/warehouse-service';
 import { formatPrice } from '@/utils/format-price.util';
-import { resolveAddress, resolveLocation, buildGeocodeQuery, geocodeAddress, buildOsmSearchUrl, extractProvinceFromAddress } from '@/utils/warehouse-address.util';
+import {
+  resolveAddress,
+  resolveLocation,
+  buildGeocodeQuery,
+  geocodeAddress,
+  buildOsmSearchUrl,
+  extractProvinceFromAddress,
+} from '@/utils/warehouse-address.util';
 
 import { useWarehouseResolver } from '../../resolver/WarehouseResolver';
 import { convertTimestampToDate } from '../../utils/convert-timestamp-to-date.util';
@@ -33,7 +40,7 @@ import { convertTimestampToDate } from '../../utils/convert-timestamp-to-date.ut
 // };
 
 export const WarehouseDetails = () => {
-  const { warehouse, id, isOwner } = useWarehouseResolver();
+  const { warehouse, id } = useWarehouseResolver();
   const { user } = useAuthStore(({ user }) => ({
     user,
   }));
@@ -62,7 +69,7 @@ export const WarehouseDetails = () => {
       setGeoLoading(false);
     }
   }, [geocodeQuery]);
-  
+
   // Tự động thử geocode khi chưa có tọa độ lưu và có địa chỉ hợp lệ
   useEffect(() => {
     if (!location && geocodeQuery && !dynamicLocation && !geoLoading) {
@@ -148,14 +155,7 @@ export const WarehouseDetails = () => {
           )}
           {warehouse.rented && <ActionButton onClick={handleViewContract}>Xem hợp đồng</ActionButton>}
         </ButtonContainer>
-        {!isOwner && (
-          <IconActions>
-            <IconActionItem>
-              <HeartIcon />
-              <Text>Yêu thích</Text>
-            </IconActionItem>
-          </IconActions>
-        )}
+        {/* Mục "Yêu thích" đã được lược bỏ theo yêu cầu */}
         <MetricsContainer>
           <Price>{formatPrice(warehouse?.price)} VND/tháng</Price>
           <OtherMetrics>
@@ -201,7 +201,9 @@ const BodyContainer = styled.div`
   position: relative;
 `;
 
-const Title = styled.h1``;
+const Title = styled.h1`
+  margin: 12px 0 8px; /* giãn cách phía trên và dưới tên kho */
+`;
 
 const Address = styled.h4``;
 const ProvinceTag = styled.small`
@@ -217,22 +219,7 @@ const Date = styled.span`
 
 /* Removed unused DirectionText styled component */
 
-const IconActions = styled.div`
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const IconActionItem = styled.div`
-  align-items: center;
-  display: flex;
-  gap: 8px;
-  cursor: pointer;
-
-  &:hover {
-    color: #999;
-  }
-`;
+/* IconActions/Yêu thích đã xóa */
 
 const MetricsContainer = styled.div`
   display: flex;
